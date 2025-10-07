@@ -12,7 +12,7 @@ public class CodigoBarrasDaoImpl implements GenericDao<CodigoBarras> {
 
     @Override
     public CodigoBarras crear(CodigoBarras codigoBarras, Connection connection) throws SQLException {
-        String sql = "INSERT INTO codigos_barras (tipo, valor, fecha_asignacion, observaciones, eliminado) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO codigo_barras (tipo, valor, fecha_asignacion, observaciones, eliminado) VALUES (?, ?, ?, ?, ?)";
         // Usamos try-with-resources para asegurar que el PreparedStatement se cierre
         try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, codigoBarras.getTipo().name());
@@ -35,7 +35,7 @@ public class CodigoBarrasDaoImpl implements GenericDao<CodigoBarras> {
 
     @Override
     public CodigoBarras leer(long id, Connection connection) throws SQLException {
-        String sql = "SELECT * FROM codigos_barras WHERE id = ? AND eliminado = false";
+        String sql = "SELECT * FROM codigo_barras WHERE id = ? AND eliminado = false";
         CodigoBarras codigoBarras = null;
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setLong(1, id);
@@ -56,7 +56,7 @@ public class CodigoBarrasDaoImpl implements GenericDao<CodigoBarras> {
     
     @Override
     public List<CodigoBarras> leerTodos(Connection connection) throws SQLException {
-        String sql = "SELECT * FROM codigos_barras WHERE eliminado = false";
+        String sql = "SELECT * FROM codigo_barras WHERE eliminado = false";
         List<CodigoBarras> codigos = new ArrayList<>();
         try (PreparedStatement ps = connection.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
@@ -76,7 +76,7 @@ public class CodigoBarrasDaoImpl implements GenericDao<CodigoBarras> {
 
     @Override
     public void actualizar(CodigoBarras codigoBarras, Connection connection) throws SQLException {
-        String sql = "UPDATE codigos_barras SET tipo = ?, valor = ?, fecha_asignacion = ?, observaciones = ? WHERE id = ?";
+        String sql = "UPDATE codigo_barras SET tipo = ?, valor = ?, fecha_asignacion = ?, observaciones = ? WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, codigoBarras.getTipo().name());
             ps.setString(2, codigoBarras.getValor());
@@ -89,7 +89,7 @@ public class CodigoBarrasDaoImpl implements GenericDao<CodigoBarras> {
 
     @Override
     public void eliminar(long id, Connection connection) throws SQLException {
-        String sql = "UPDATE codigos_barras SET eliminado = true WHERE id = ?";
+        String sql = "UPDATE codigo_barras SET eliminado = true WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setLong(1, id);
             ps.executeUpdate();

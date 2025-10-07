@@ -1,0 +1,8 @@
+com\entities\CodigoBarras.class
+com\entities\Producto.class
+com\main\App.class
+com\dao\CodigoBarrasDaoImpl.class
+com\dao\GenericDao.class
+com\entities\TipoCodigoBarras.class
+com\config\DatabaseConnection.class
+com\dao\ProductoDaoImpl.class
