@@ -1,8 +1,6 @@
 //Producto.java
 package com.entities;
 
-import com.entities.CodigoBarras;
-
 public class Producto {
 
     private Long id;
@@ -18,14 +16,29 @@ public class Producto {
     public Producto() {
     }
 
-    // Constructor completo
-    public Producto(Long id, String nombre, String marca, String categoria, double precio, Double peso, CodigoBarras codigoBarras) {
-        this.id = id;
+    // Constructor con datos principales;
+    public Producto(String nombre, String marca, String categoria, double precio, Double peso) {
+        this.id = null; 
         this.nombre = nombre;
         this.marca = marca;
         this.categoria = categoria;
         this.precio = precio;
         this.peso = peso;
+        this.codigoBarras = null; 
+    }
+
+    // Constructor completo
+    public Producto(Long id, String nombre, String marca, String categoria, double precio, Double peso, CodigoBarras codigoBarras) {
+        this(nombre, marca, categoria, precio, peso);
+        this.id = id;
+        this.codigoBarras = codigoBarras;
+        
+    }
+
+    // Constructor con id.
+    public Producto(String nombre, String marca, String categoria, double precio, CodigoBarras codigoBarras, Double peso) {
+        this(nombre, marca, categoria, precio, peso);
+        this.id = null;
         this.codigoBarras = codigoBarras;
     }
 

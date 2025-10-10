@@ -18,7 +18,12 @@ public class CodigoBarras {
 
     // Constructor completo
     public CodigoBarras(Long id, TipoCodigoBarras tipo, String valor, LocalDate fechaAsignacion, String observaciones) {
+        this(tipo, valor, fechaAsignacion, observaciones);
         this.id = id;
+    }
+
+    public CodigoBarras(TipoCodigoBarras tipo, String valor, LocalDate fechaAsignacion, String observaciones) {
+        this.id = null; 
         this.tipo = tipo;
         this.valor = valor;
         this.fechaAsignacion = fechaAsignacion;
