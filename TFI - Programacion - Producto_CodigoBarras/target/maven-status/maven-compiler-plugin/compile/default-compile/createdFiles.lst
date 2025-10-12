@@ -1,8 +1,15 @@
-com\entities\CodigoBarras.class
 com\entities\Producto.class
+com\servicios\ProductoService.class
 com\main\App.class
 com\dao\CodigoBarrasDaoImpl.class
 com\dao\GenericDao.class
 com\entities\TipoCodigoBarras.class
 com\config\DatabaseConnection.class
+com\servicios\CodigoBarrasService.class
+com\main\ProductoController.class
+com\entities\CodigoBarras.class
+com\main\CodigoBarrasController.class
+com\servicios\GenericService.class
+com\main\AppMenu.class
 com\dao\ProductoDaoImpl.class
+com\servicios\CodigoBarrasService$1.class
