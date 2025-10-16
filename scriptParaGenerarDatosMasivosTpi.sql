@@ -87,6 +87,6 @@ END$$
 DELIMITER ;
 
 -- Ejecutar con menos registros primero para probar
-CALL GenerarDatosMasivos(600000);
+CALL GenerarDatosMasivos(610000);
 -- Verificar resultadosSELECT COUNT(*) as total_productos FROM productos;
 SELECT COUNT(*) as total_codigos FROM codigos_barras;
