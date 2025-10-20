@@ -92,7 +92,6 @@ HAVING cnt > 1
 LIMIT 20;
 
 -- 14) Comprobación de integridad rápida: conteos cruzados esperables
--- Si cada producto genera 1 codigo y viceversa, total_productos == total_codigos == pares_producto_codigo
 SELECT
     (SELECT COUNT(*) FROM productos) AS total_productos,
     (SELECT COUNT(*) FROM codigos_barras) AS total_codigos,
@@ -105,7 +104,7 @@ SELECT id, nombre, precio FROM productos WHERE precio <= 0 LIMIT 50;
 -- Pesos negativos
 SELECT id, nombre, peso FROM productos WHERE peso < 0 LIMIT 50;
 
--- Categorías fuera del dominio definido (si aplicaste CHECK con lista fixa)
+-- Categorías fuera del dominio definido
 SELECT DISTINCT categoria FROM productos
 WHERE categoria NOT IN ('Electrónicos','Alimentación','Deportes','Libros','Muebles','Bebidas','Ropa','Juguetes','Hogar','Salud');
 
