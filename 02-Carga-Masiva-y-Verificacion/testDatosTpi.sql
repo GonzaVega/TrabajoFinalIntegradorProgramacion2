@@ -4,7 +4,7 @@ USE tpi_productos;
 SELECT COUNT(*) AS total_productos FROM productos;
 SELECT COUNT(*) AS total_codigos FROM codigos_barras;
 
--- 2) ¿Cuántos productos tienen código asociado (codigos_barras_id NOT NULL)?
+-- 2) ¿Cuántos productos tienen código asociado?
 SELECT COUNT(*) AS productos_con_codigo
 FROM productos
 WHERE codigos_barras_id IS NOT NULL;
@@ -14,7 +14,7 @@ SELECT COUNT(DISTINCT cb.id) AS codigos_referenciados
 FROM codigos_barras cb
 JOIN productos p ON p.codigos_barras_id = cb.id;
 
--- 4) Verificar correspondencia 1:1 esperada (si tu modelo es 1:1)
+-- 4) Verificar correspondencia 1:1 esperada 
 -- número de pares producto<->codigo por JOIN
 SELECT COUNT(*) AS pares_producto_codigo
 FROM productos p
@@ -83,7 +83,7 @@ LEFT JOIN codigos_barras cb ON p.codigos_barras_id = cb.id
 ORDER BY p.id
 LIMIT 50;
 
--- 13) Verificar que no existan duplicados de codigos_barras_id en productos (si la relación debe ser 1:1)
+-- 13) Verificar que no existan duplicados de codigos_barras_id en productos 
 SELECT codigos_barras_id, COUNT(*) AS cnt
 FROM productos
 WHERE codigos_barras_id IS NOT NULL

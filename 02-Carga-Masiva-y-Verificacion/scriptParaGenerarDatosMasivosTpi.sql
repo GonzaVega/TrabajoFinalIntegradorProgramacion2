@@ -1,6 +1,5 @@
 USE tpi_productos;
 
--- Cambiamos el delimitador temporalmente
 DELIMITER $$
 
 DROP PROCEDURE IF EXISTS GenerarDatosMasivos$$
@@ -60,7 +59,6 @@ BEGIN
         
         SET i = i + 1;
         
-        -- Hacer commit cada 1000 registros para evitar timeouts
         IF i % 1000 = 0 THEN
             COMMIT;
             START TRANSACTION;
@@ -86,7 +84,4 @@ END$$
 -- Restauramos el delimitador normal
 DELIMITER ;
 
--- Ejecutar con menos registros primero para probar
 CALL GenerarDatosMasivos(610000);
--- Verificar resultadosSELECT COUNT(*) as total_productos FROM productos;
-SELECT COUNT(*) as total_codigos FROM codigos_barras;
