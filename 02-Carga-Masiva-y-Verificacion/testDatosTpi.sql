@@ -14,8 +14,7 @@ SELECT COUNT(DISTINCT cb.id) AS codigos_referenciados
 FROM codigos_barras cb
 JOIN productos p ON p.codigos_barras_id = cb.id;
 
--- 4) Verificar correspondencia 1:1 esperada 
--- número de pares producto<->codigo por JOIN
+-- 4) Verificar correspondencia 1:1 
 SELECT COUNT(*) AS pares_producto_codigo
 FROM productos p
 JOIN codigos_barras cb ON p.codigos_barras_id = cb.id;
@@ -98,7 +97,6 @@ SELECT
     (SELECT COUNT(*) FROM productos p JOIN codigos_barras cb ON p.codigos_barras_id = cb.id) AS pares_join;
 
 -- 15) Pruebas para constraints CHECK aparentes (buscar violaciones lógicas)
--- Precios <= 0 (deberían ser 0 resultados si CHECK (precio > 0) está activo)
 SELECT id, nombre, precio FROM productos WHERE precio <= 0 LIMIT 50;
 
 -- Pesos negativos

@@ -10,7 +10,6 @@ CREATE TABLE codigos_barras (
     valor VARCHAR(20) NOT NULL UNIQUE,
     fecha_asignacion DATE,
     observaciones VARCHAR(255),
-    -- CHECK: valor no puede ser cadena vacía
     CHECK (LENGTH(valor) > 0)
 );
 
