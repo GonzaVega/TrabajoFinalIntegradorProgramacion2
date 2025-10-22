@@ -16,14 +16,14 @@ JOIN codigos_barras cb
 WHERE p.eliminado = FALSE
 ORDER BY p.nombre;
 
--- Consulta 2: JOIN + rango de precios Objetivo: productos con precio mayor a 500 agrupados por categoria.
+-- Consulta 2: JOIN + rango de precios Objetivo: productos con precio mayor a 1000 agrupados por categoria.
 SELECT 
     p.categoria,
     COUNT(*) AS cantidad_productos_caros,
     ROUND(AVG(p.precio),2) AS promedio_precio
 FROM productos p
 JOIN codigos_barras cb ON p.codigos_barras_id = cb.id
-WHERE p.precio > 500
+WHERE p.precio > 1000
 GROUP BY p.categoria
 ORDER BY promedio_precio DESC;
 
