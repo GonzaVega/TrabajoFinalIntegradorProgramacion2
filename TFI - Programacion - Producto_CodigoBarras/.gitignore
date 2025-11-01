@@ -8,3 +8,4 @@ build/
 
 # Base de datos (cada uno tendrá su config)
 database.properties
+d.properties
