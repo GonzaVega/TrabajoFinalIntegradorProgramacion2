@@ -1,4 +1,3 @@
-// App.java
 package com.main;
 
 public class App {

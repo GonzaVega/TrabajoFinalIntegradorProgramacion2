@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-=======
-//CodigoBarrasController.java
->>>>>>> 3cd61faa9efe151ceb63dd4b1acd3bd2a14a7765
 package com.main;
 
 import java.time.LocalDate;
@@ -11,6 +7,7 @@ import java.util.Scanner;
 import com.entities.CodigoBarras;
 import com.entities.TipoCodigoBarras;
 import com.servicios.CodigoBarrasService;
+import com.utils.InputValidator;
 
 public class CodigoBarrasController {
   private CodigoBarrasService codigoBarrasService;
@@ -23,7 +20,9 @@ public class CodigoBarrasController {
 
   private CodigoBarras buscaValidaCodigoBarras(long idCodigoBarras) {
     CodigoBarras codigoBarras = codigoBarrasService.getById(idCodigoBarras);
-    if (codigoBarras == null) System.out.println("❌ No se encontró un código de barras con el ID proporcionado.");
+    if (codigoBarras == null) {
+      System.out.println("❌ No se encontró un código de barras con el ID proporcionado.");
+    }
     return codigoBarras;
   }
 
@@ -56,16 +55,14 @@ public class CodigoBarrasController {
   public void crearCodigoBarras() {
     System.out.println("--Creación de nuevo código de barras--");
     System.out.println("Por favor, ingrese los datos del código de barras:");
-    System.out.println("Valor:");
-    String valor = scanner.nextLine();
-    System.out.println("Observaciones:");
-    String observaciones = scanner.nextLine();
+    String valor = InputValidator.leerString(scanner, "Valor:");
+    String observaciones = InputValidator.leerString(scanner, "Observaciones:");
     
     mostrarTiposCodigoBarras();
     TipoCodigoBarras tipoSeleccionado = seleccionarTipoCodigoBarras();
     if (tipoSeleccionado == null) {
-        System.out.println("❌ Opción inválida. Operación cancelada.");
-        return;
+      System.out.println("❌ Opción inválida. Operación cancelada.");
+      return;
     }
     
     CodigoBarras nuevoCodigoBarras = new CodigoBarras();
@@ -83,29 +80,28 @@ public class CodigoBarrasController {
   
   public void editarCodigoBarras() {
     System.out.println("--Edición de código de barras--");
-    System.out.println("Por favor, ingrese el ID del código de barras a editar:");
-    long idCodigoBarras = Long.parseLong(scanner.nextLine());
-    
+    Long idCodigoBarras = InputValidator.leerLongSeguro(scanner, "Ingrese el ID del código de barras a editar:");
+  
     CodigoBarras codigoEditar = buscaValidaCodigoBarras(idCodigoBarras);
     if (codigoEditar == null) return;
     
     System.out.println("Código de barras encontrado: " + codigoEditar);
     System.out.println("Ingrese los nuevos datos del código de barras (deje en blanco para mantener el valor actual):");
     
-    System.out.println("Valor (" + codigoEditar.getValor() + "):");
-    String valor = scanner.nextLine();
+    String valor = InputValidator.leerString(scanner, "Valor [" + codigoEditar.getValor() + "]:");
     if (!valor.isEmpty()) codigoEditar.setValor(valor);
     
-    System.out.println("Observaciones (" + codigoEditar.getObservaciones() + "):");
-    String observaciones = scanner.nextLine();
+    String observaciones = InputValidator.leerString(scanner, "Observaciones [" + codigoEditar.getObservaciones() + "]:");
     if (!observaciones.isEmpty()) codigoEditar.setObservaciones(observaciones);
     
-    System.out.println("¿Desea cambiar el tipo de código de barras? (S/N):");
-    String cambiarTipo = scanner.nextLine().toUpperCase().trim();
-    if (cambiarTipo.equals("S")) {
-        mostrarTiposCodigoBarras();
-        TipoCodigoBarras nuevoTipo = seleccionarTipoCodigoBarras();
-        if (nuevoTipo != null) codigoEditar.setTipo(nuevoTipo);
+    if (InputValidator.leerConfirmacion(scanner, "¿Desea cambiar el tipo de código de barras?")) {
+      mostrarTiposCodigoBarras();
+      TipoCodigoBarras nuevoTipo = seleccionarTipoCodigoBarras();
+      if (nuevoTipo != null) {
+        codigoEditar.setTipo(nuevoTipo);
+      } else {
+        System.out.println("Tipo de código mantenido sin cambios.");
+      }
     }
     
     CodigoBarras editado = codigoBarrasService.actualizar(codigoEditar);
@@ -117,13 +113,12 @@ public class CodigoBarrasController {
 
   public void buscarCodigoBarras() {
     System.out.println("--Búsqueda de código de barras--");
-    System.out.println("Por favor, ingrese el ID del código de barras a buscar:");
-    long idCodigoBarras = Long.parseLong(scanner.nextLine());
-    
+    Long idCodigoBarras = InputValidator.leerLongSeguro(scanner, "Ingrese el ID del código de barras a buscar:");
+  
     CodigoBarras codigoEncontrado = buscaValidaCodigoBarras(idCodigoBarras);
     if (codigoEncontrado != null) {
-        System.out.println("✅ Código de barras encontrado: " + codigoEncontrado);
-        return;
+      System.out.println("✅ Código de barras encontrado: " + codigoEncontrado);
+      return;
     }
   }
 
@@ -137,36 +132,44 @@ public class CodigoBarrasController {
     }
   }
 
-  //TODO: habilitar este método cuando este el DAO.
-  // public void mostrarCodigosBarrasPorTipo() {
-  //   System.out.println("--Códigos de Barras por Tipo--");
-  //   mostrarTiposCodigoBarras();
-  //   TipoCodigoBarras tipoSeleccionado = seleccionarTipoCodigoBarras();
-  //   if (tipoSeleccionado == null) {
-  //       System.out.println("❌ Opción inválida. Operación cancelada.");
-  //       return;
-  //   }
+  public void mostrarCodigosBarrasPorTipo() {
+    System.out.println("--Códigos de Barras por Tipo--");
+    mostrarTiposCodigoBarras();
+    TipoCodigoBarras tipoSeleccionado = seleccionarTipoCodigoBarras();
+    if (tipoSeleccionado == null) {
+      System.out.println("❌ Opción inválida. Operación cancelada.");
+      return;
+    }
     
-  //   ArrayList<CodigoBarras> codigos = (ArrayList<CodigoBarras>) codigoBarrasService.buscarPorTipo(tipoSeleccionado);
-  //   if (codigos.isEmpty()) System.out.println("❌ No hay códigos registrados para el tipo seleccionado.");
-        
-  //   for (CodigoBarras c : codigos) {
-  //       System.out.println(c);
-  //   }
-  // }
+    ArrayList<CodigoBarras> codigos = (ArrayList<CodigoBarras>) codigoBarrasService.buscarPorTipo(tipoSeleccionado);
+    if (codigos.isEmpty()) {
+      System.out.println("❌ No hay códigos registrados para el tipo seleccionado.");
+      return;
+    }
+    
+    for (CodigoBarras c : codigos) {
+      System.out.println(c);
+    }
+  }
 
   public void eliminarCodigoBarras() {
     System.out.println("--Eliminación de código de barras--");
-    System.out.println("Por favor, ingrese el ID del código de barras a eliminar:");
-    long idCodigoBarras = Long.parseLong(scanner.nextLine());
-    
+    Long idCodigoBarras = InputValidator.leerLongSeguro(scanner, "Ingrese el ID del código de barras a eliminar:");
+  
     CodigoBarras codigoEliminar = buscaValidaCodigoBarras(idCodigoBarras);
     if (codigoEliminar == null) return;
     
-    CodigoBarras eliminado = codigoBarrasService.eliminar(idCodigoBarras);
-    if (eliminado != null) {
-      System.out.println("✅ Código de barras eliminado correctamente: " + eliminado);
-      return;
+    System.out.println("Código de barras a eliminar: " + codigoEliminar);
+    
+    if (InputValidator.leerConfirmacion(scanner, "¿Está seguro de que desea eliminar este código de barras?")) {
+      CodigoBarras eliminado = codigoBarrasService.eliminar(idCodigoBarras);
+      if (eliminado != null) {
+        System.out.println("✅ Código de barras eliminado correctamente: " + eliminado);
+      } else {
+        System.out.println("❌ Error al eliminar el código de barras.");
+      }
+    } else {
+      System.out.println("Operación cancelada.");
     }
   }
 }

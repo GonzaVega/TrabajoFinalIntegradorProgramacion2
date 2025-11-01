@@ -1,10 +1,7 @@
-<<<<<<< HEAD
-=======
-//AppMenu.java
->>>>>>> 3cd61faa9efe151ceb63dd4b1acd3bd2a14a7765
 package com.main;
 
 import java.util.Scanner;
+import com.utils.InputValidator;
 
 public class AppMenu {
     public static void start() {
@@ -12,10 +9,10 @@ public class AppMenu {
         Scanner scanner = new Scanner(System.in);
         ProductoController productoController = new ProductoController();
         CodigoBarrasController codigoBarrasController = new CodigoBarrasController();
-        int opcionUsuario = -1;
+        boolean salir = false;
 
-        while (opcionUsuario != 0) {
-            System.out.println("Seleccione una opción:");
+        while (!salir) {
+            System.out.println("\n=== MENÚ PRINCIPAL ===");
             System.out.println("1. Crear nuevo producto");
             System.out.println("2. Editar producto existente");
             System.out.println("3. Crear nuevo código de barras");
@@ -30,7 +27,7 @@ public class AppMenu {
             System.out.println("12. Buscar por categoria de producto");
             System.out.println("13. Buscar por tipo de códigos de barras");
             System.out.println("0. Salir");
-            opcionUsuario = Integer.parseInt(scanner.nextLine());
+            Integer opcionUsuario = InputValidator.leerIntegerSeguro(scanner, "\nSeleccione una opción:");
 
             switch (opcionUsuario) {
                 case 1:
@@ -62,23 +59,26 @@ public class AppMenu {
                   break;
                 case 10:
                     productoController.mostrarProductos();
-                    break;
+                  break;
                 case 11:
                     codigoBarrasController.mostrarCodigosBarras();
-                    break;
-                    // TODO: Habilitar cuando este el DAO.
-                // case 12:
-                //     productoController.mostrarProductosPorCategoria();
-                //     break;
-                // case 13:
-                //     codigoBarrasController.mostrarCodigosBarrasPorTipo();
-                //     break;
+                  break;
+                case 12:
+                    productoController.mostrarProductosCategoria();
+                  break;
+                case 13:
+                    codigoBarrasController.mostrarCodigosBarrasPorTipo();
+                  break;
                 case 0:
-                    System.out.println("Saliendo de la aplicación...");
-                    break;
+                    if (InputValidator.leerConfirmacion(scanner, "¿Está seguro de que desea salir?")) {
+                      System.out.println("Saliendo del sistema...");
+                      salir = true;
+                    }
+                  break;
                 default:
-                    System.out.println("Opción no válida. Intente nuevamente.");
-            }
+                  System.out.println("❌ Opción inválida. Por favor seleccione una opción del 0 al 13.");
+                  break;
+              }
         }
         scanner.close();
         System.out.println("Aplicación finalizada.");

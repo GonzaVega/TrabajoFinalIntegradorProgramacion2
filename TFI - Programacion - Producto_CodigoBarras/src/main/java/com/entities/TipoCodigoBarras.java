@@ -1,4 +1,3 @@
-//TipoCodigoBarras.java
 package com.entities;
 
 public enum TipoCodigoBarras {

@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-=======
-//ProductoController.java
->>>>>>> 3cd61faa9efe151ceb63dd4b1acd3bd2a14a7765
 package com.main;
 
 import java.time.LocalDate;
@@ -13,6 +9,7 @@ import com.entities.Producto;
 import com.entities.TipoCodigoBarras;
 import com.servicios.CodigoBarrasService;
 import com.servicios.ProductoService;
+import com.utils.InputValidator;
 
 public class ProductoController {
   private ProductoService productoService;
@@ -34,8 +31,7 @@ public class ProductoController {
   }
 
   private CodigoBarras seleccionarCodigoBarrasExistente() {
-    System.out.println("Ingrese el ID del código de barras:");
-    long idCodigoBarras = Long.parseLong(scanner.nextLine());
+    Long idCodigoBarras = InputValidator.leerLongSeguro(scanner, "Ingrese el ID del código de barras:");
     CodigoBarras codigo = codigoBarrasService.getById(idCodigoBarras);
     
     if (codigo == null) System.out.println("❌ No se encontró el código de barras especificado");
@@ -73,44 +69,43 @@ public class ProductoController {
   }
 
   private CodigoBarras seleccionarCodigoBarrasCompleto() {
-    System.out.println("¿Desea asignar un código de barras al producto? (S/N):");
-    String asignarCodigo = scanner.nextLine().toUpperCase().trim();
-    
-    if (!asignarCodigo.equals("S")) return null;
+    if (!InputValidator.leerConfirmacion(scanner, "¿Desea asignar un código de barras al producto?")) {
+      return null;
+    }
     
     System.out.println("Opciones:");
     System.out.println("1) Seleccionar código de barras existente por ID");
     System.out.println("2) Crear nuevo código de barras");
-    System.out.println("Seleccione opción (1-2):");
     
-    String opcion = scanner.nextLine().trim();
+    Integer opcion = InputValidator.leerIntegerSeguro(scanner, "Seleccione opción (1-2):");
     
     switch (opcion) {
-        case "1":
-            return seleccionarCodigoBarrasExistente();
-            
-        case "2":
-            return crearNuevoCodigoBarras();
-            
-        default:
-            System.out.println("Opción inválida. Sin código de barras asignado.");
-            return null;
+      case 1:
+        return seleccionarCodigoBarrasExistente();
+        
+      case 2:
+        return crearNuevoCodigoBarras();
+        
+      default:
+        System.out.println("Opción inválida. Sin código de barras asignado.");
+        return null;
     }
   }
 
   public void crearProducto() {
     System.out.println("--Creación de nuevo producto--");
     System.out.println("Por favor, ingrese los datos del producto:");
-    System.out.println("Nombre:");
-    String nombre = scanner.nextLine();
-    System.out.println("Marca:");
-    String marca = scanner.nextLine();
-    System.out.println("Categoría:");
-    String categoria = scanner.nextLine();
-    System.out.println("Precio:");
-    double precio = Double.parseDouble(scanner.nextLine());
-    System.out.println("Peso:");
-    Double peso = Double.parseDouble(scanner.nextLine());
+    String nombre = InputValidator.leerString(scanner, "Nombre:");
+    String marca = InputValidator.leerString(scanner, "Marca:");
+    String categoria = InputValidator.leerStringMayusculas(scanner, "Categoría:");
+    Double precio = InputValidator.leerDoubleSeguro(scanner, "Precio:");
+  
+    System.out.println("¿Desea ingresar el peso del producto?");
+    String ingresarPeso = InputValidator.leerStringMayusculas(scanner, "(S/N):");
+    Double peso = null;
+    if (ingresarPeso.equals("S")) {
+      peso = InputValidator.leerDoubleSeguro(scanner, "Peso:");
+    }
 
     CodigoBarras codigo = seleccionarCodigoBarrasCompleto();
     
@@ -126,81 +121,69 @@ public class ProductoController {
   
   public void editarProducto() {
     System.out.println("--Edición de producto--");
-    System.out.println("Por favor, ingrese el ID del producto a editar:");
-    long idProducto = Long.parseLong(scanner.nextLine());
-    
+    Long idProducto = InputValidator.leerLongSeguro(scanner, "Ingrese el ID del producto a editar:");
+  
     Producto productoEditar = buscaValidaProducto(idProducto);
     if (productoEditar == null) return;
-    
+  
     System.out.println("Producto encontrado: " + productoEditar);
     System.out.println("Ingrese los nuevos datos del producto (deje en blanco para mantener el valor actual):");
-    
-    System.out.println("Nombre (" + productoEditar.getNombre() + "):");
-    String nombre = scanner.nextLine();
+  
+    String nombre = InputValidator.leerString(scanner, "Nombre [" + productoEditar.getNombre() + "]:");
     if (!nombre.isEmpty()) productoEditar.setNombre(nombre);
-    
-    System.out.println("Marca (" + productoEditar.getMarca() + "):");
-    String marca = scanner.nextLine();
+  
+    String marca = InputValidator.leerString(scanner, "Marca [" + productoEditar.getMarca() + "]:");
     if (!marca.isEmpty()) productoEditar.setMarca(marca);
     
-    System.out.println("Categoría (" + productoEditar.getCategoria() + "):");
-    String categoria = scanner.nextLine();
-    if (!categoria.isEmpty()) productoEditar.setCategoria(categoria);
+    String categoria = InputValidator.leerString(scanner, "Categoría [" + productoEditar.getCategoria() + "]:");
+    if (!categoria.isEmpty()) productoEditar.setCategoria(categoria.toUpperCase());
     
-    System.out.println("Precio (" + productoEditar.getPrecio() + "):");
-    String precioInput = scanner.nextLine();
-    if (!precioInput.isEmpty()) {
-      double precio = Double.parseDouble(precioInput);
+    if (InputValidator.leerConfirmacion(scanner, "¿Desea modificar el precio?")) {
+      Double precio = InputValidator.leerDoubleSeguro(scanner, "Nuevo precio:");
       productoEditar.setPrecio(precio);
     }
     
-    System.out.println("Peso (" + productoEditar.getPeso() + "):");
-    String pesoInput = scanner.nextLine();
-    if (!pesoInput.isEmpty()) {
-      double peso = Double.parseDouble(pesoInput);
+    if (InputValidator.leerConfirmacion(scanner, "¿Desea modificar el peso?")) {
+      Double peso = InputValidator.leerDoubleSeguro(scanner, "Nuevo peso:");
       productoEditar.setPeso(peso);
     }
     
-    System.out.println("¿Desea modificar el código de barras? (S/N):");
-    String modificarCodigo = scanner.nextLine().toUpperCase().trim();
-    
-    if (modificarCodigo.equals("S")) {
-        System.out.println("Código de barras actual: " + 
-            (productoEditar.getCodigoBarras() != null ? 
-             productoEditar.getCodigoBarras().toString() : "Sin código asignado"));
-        
-        System.out.println("Opciones:");
-        System.out.println("1) Asignar nuevo código de barras");
-        System.out.println("2) Quitar código de barras actual");
-        System.out.println("3) Mantener actual");
-        System.out.println("Seleccione opción (1-3):");
-        
-        String opcion = scanner.nextLine().trim();
-        
-        switch (opcion) {
-            case "1":
-                CodigoBarras nuevoCodigo = seleccionarCodigoBarrasCompleto();
-                if (nuevoCodigo != null) {
-                    productoEditar.setCodigoBarras(nuevoCodigo);
-                    System.out.println("✅ Código de barras asignado correctamente");
-                }
-                break;
-                
-            case "2":
-                productoEditar.setCodigoBarras(null);
-                System.out.println("✅ Código de barras removido del producto");
-                break;
-                
-            case "3":
-                System.out.println("Código de barras mantenido sin cambios");
-                break;
-                
-            default:
-                System.out.println("Opción inválida. Código de barras mantenido sin cambios");
-                break;
-        }
-    }
-    
+    if (InputValidator.leerConfirmacion(scanner, "¿Desea modificar el código de barras?")) {
+      System.out.println("Código de barras actual: " + 
+          (productoEditar.getCodigoBarras() != null ? 
+          productoEditar.getCodigoBarras().toString() : "Sin código asignado"));
+      
+      System.out.println("Opciones:");
+      System.out.println("1) Asignar nuevo código de barras");
+      System.out.println("2) Quitar código de barras actual");
+      System.out.println("3) Mantener actual");
+      
+      Integer opcion = InputValidator.leerIntegerSeguro(scanner, "Seleccione opción (1-3):");
+      
+      switch (opcion) {
+        case 1:
+          CodigoBarras nuevoCodigo = seleccionarCodigoBarrasCompleto();
+          if (nuevoCodigo != null) {
+            productoEditar.setCodigoBarras(nuevoCodigo);
+            System.out.println("✅ Código de barras asignado correctamente");
+          }
+          break;
+          
+        case 2:
+          productoEditar.setCodigoBarras(null);
+          System.out.println("✅ Código de barras removido del producto");
+          break;
+          
+        case 3:
+          System.out.println("Código de barras mantenido sin cambios");
+          break;
+          
+        default:
+          System.out.println("Opción inválida. Código de barras mantenido sin cambios");
+          break;
+      }
+  }
+  
     Producto editado = productoService.actualizar(productoEditar);
     if (editado != null) {
       System.out.println("✅ Producto actualizado correctamente: " + editado);
@@ -210,13 +193,12 @@ public class ProductoController {
 
   public void buscarProducto() {
     System.out.println("--Búsqueda de producto--");
-    System.out.println("Por favor, ingrese el ID del producto a buscar:");
-    long idProducto = Long.parseLong(scanner.nextLine());
-    
+    Long idProducto = InputValidator.leerLongSeguro(scanner, "Ingrese el ID del producto a buscar:");
+  
     Producto productoEncontrado = buscaValidaProducto(idProducto);
     if (productoEncontrado != null) {
-        System.out.println("✅ Producto encontrado: " + productoEncontrado);
-        return;
+      System.out.println("✅ Producto encontrado: " + productoEncontrado);
+      return;
     }
   }
 
@@ -230,44 +212,53 @@ public class ProductoController {
     }
   }
 
-  //TODO: habilitar este método cuando este el DAO.
-  // public void mostrarProductosCategoria() {
-  //   System.out.println("--Productos por Categoría--");
-  //   System.out.println("Por favor, ingrese la categoría a filtrar:");
-  //   String categoria = scanner.nextLine().trim().toLowerCase();
-  //   if (categoria == null || categoria.isEmpty()) {
-  //       System.out.println("❌ Categoría inválida. Operación cancelada.");
-  //       return;
-  //   }
+  public void mostrarProductosCategoria() {
+    System.out.println("--Productos por Categoría--");
+    String categoria = InputValidator.leerStringMayusculas(scanner, "Ingrese la categoría a filtrar:");
+  
+    if (categoria.isEmpty()) {
+      System.out.println("❌ Categoría inválida. Operación cancelada.");
+      return;
+    }
 
-  //   ArrayList<Producto> productos = (ArrayList<Producto>) productoService.buscarPorCategoria(categoria);
-  //   if (productos.isEmpty()) System.out.println("❌ No hay productos registrados para la categoría seleccionada.");
+    ArrayList<Producto> productos = (ArrayList<Producto>) productoService.buscarPorCategoria(categoria);
+    
+    if (productos.isEmpty()) {
+      System.out.println("❌ No hay productos registrados para la categoría: " + categoria);
+      return;
+    }
 
-  //   for (Producto p : productos) {
-  //       System.out.println(p);
-  //   }
-  // }
+    System.out.println("Productos encontrados:");
+    for (Producto p : productos) {
+      System.out.println(p);
+    }
+  }
 
   public void eliminarProducto() {
     System.out.println("--Eliminación de producto--");
-    System.out.println("Por favor, ingrese el ID del producto a eliminar:");
-    long idProducto = Long.parseLong(scanner.nextLine());
-    
+    Long idProducto = InputValidator.leerLongSeguro(scanner, "Ingrese el ID del producto a eliminar:");
+  
     Producto productoEliminar = buscaValidaProducto(idProducto);
     if (productoEliminar == null) return;
     
-    Producto eliminado = productoService.eliminar(idProducto);
-    if (eliminado != null) {
-      System.out.println("✅ Producto eliminado correctamente: " + eliminado);
-      return;
+    System.out.println("Producto a eliminar: " + productoEliminar);
+    
+    if (InputValidator.leerConfirmacion(scanner, "¿Está seguro de que desea eliminar este producto?")) {
+      Producto eliminado = productoService.eliminar(idProducto);
+      if (eliminado != null) {
+        System.out.println("✅ Producto eliminado correctamente: " + eliminado);
+      } else {
+        System.out.println("❌ Error al eliminar el producto.");
+      }
+    } else {
+      System.out.println("Operación cancelada.");
     }
   }
 
   public void asignarCodigo() {
     System.out.println("--Asignación de código de barras a producto--");
-    System.out.println("Por favor, ingrese el ID del producto:");
-    long idProducto = Long.parseLong(scanner.nextLine());
-    
+    Long idProducto = InputValidator.leerLongSeguro(scanner, "Ingrese el ID del producto:");
+  
     Producto productoExistente = buscaValidaProducto(idProducto);
     if (productoExistente == null) return;
     
@@ -275,15 +266,15 @@ public class ProductoController {
     
     CodigoBarras codigo = seleccionarCodigoBarrasCompleto();
     if (codigo == null) {
-        System.out.println("❌ Operación cancelada - no se seleccionó código de barras válido");
-        return;
+      System.out.println("❌ Operación cancelada - no se seleccionó código de barras válido");
+      return;
     }
     
     productoExistente.setCodigoBarras(codigo);
     Producto actualizado = productoService.actualizar(productoExistente);
     if (actualizado != null) {
-        System.out.println("✅ Código de barras asignado correctamente al producto: " + actualizado);
-        return;
+      System.out.println("✅ Código de barras asignado correctamente al producto: " + actualizado);
+      return;
     }
-  }
+  }  
 }

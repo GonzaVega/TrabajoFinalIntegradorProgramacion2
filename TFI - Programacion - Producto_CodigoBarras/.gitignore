@@ -1,0 +1,10 @@
+# Archivos compilados
+target/
+*.class
+
+# NetBeans
+nbproject/private/
+build/
+
+# Base de datos (cada uno tendrá su config)
+database.properties
