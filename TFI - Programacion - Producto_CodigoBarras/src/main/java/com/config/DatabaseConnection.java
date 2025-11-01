@@ -11,7 +11,7 @@ public class DatabaseConnection {
 
     private static Properties properties = new Properties();
 
-    // Bloque estático para cargar las propiedades una sola vez
+    // Bloque estático para cargar propiedades una sola vez
     static {
         try (InputStream input = DatabaseConnection.class.getClassLoader().getResourceAsStream("db.properties")) {
             if (input == null) {

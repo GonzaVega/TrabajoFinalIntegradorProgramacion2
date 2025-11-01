@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+//CodigoBarrasService.java
+>>>>>>> 3cd61faa9efe151ceb63dd4b1acd3bd2a14a7765
 package com.servicios;
 
 import java.sql.Connection;

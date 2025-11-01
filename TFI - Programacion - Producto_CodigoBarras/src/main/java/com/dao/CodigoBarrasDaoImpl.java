@@ -12,18 +12,18 @@ public class CodigoBarrasDaoImpl implements GenericDao<CodigoBarras> {
 
     @Override
     public CodigoBarras crear(CodigoBarras codigoBarras, Connection connection) throws SQLException {
-        String sql = "INSERT INTO codigo_barras (tipo, valor, fecha_asignacion, observaciones, eliminado) VALUES (?, ?, ?, ?, ?)";
-        // Usamos try-with-resources para asegurar que el PreparedStatement se cierre
+        String sql = "INSERT INTO codigos_barras (tipo, valor, fecha_asignacion, observaciones, eliminado) VALUES (?, ?, ?, ?, ?)";
+        // Try-with-resources para asegurar que el PreparedStatement se cierre
         try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, codigoBarras.getTipo().name());
             ps.setString(2, codigoBarras.getValor());
             ps.setDate(3, Date.valueOf(codigoBarras.getFechaAsignacion()));
             ps.setString(4, codigoBarras.getObservaciones());
             ps.setBoolean(5, codigoBarras.isEliminado());
-            
+
             ps.executeUpdate();
 
-            // Obtenemos el ID generado por la base de datos
+            // Obtener el ID generado por la base de datos
             try (ResultSet rs = ps.getGeneratedKeys()) {
                 if (rs.next()) {
                     codigoBarras.setId(rs.getLong(1));
@@ -35,7 +35,7 @@ public class CodigoBarrasDaoImpl implements GenericDao<CodigoBarras> {
 
     @Override
     public CodigoBarras leer(long id, Connection connection) throws SQLException {
-        String sql = "SELECT * FROM codigo_barras WHERE id = ? AND eliminado = false";
+        String sql = "SELECT * FROM codigos_barras WHERE id = ? AND eliminado = false";
         CodigoBarras codigoBarras = null;
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setLong(1, id);
@@ -53,13 +53,12 @@ public class CodigoBarrasDaoImpl implements GenericDao<CodigoBarras> {
         }
         return codigoBarras;
     }
-    
+
     @Override
     public List<CodigoBarras> leerTodos(Connection connection) throws SQLException {
-        String sql = "SELECT * FROM codigo_barras WHERE eliminado = false";
+        String sql = "SELECT * FROM codigos_barras WHERE eliminado = false";
         List<CodigoBarras> codigos = new ArrayList<>();
-        try (PreparedStatement ps = connection.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 CodigoBarras codigoBarras = new CodigoBarras();
                 codigoBarras.setId(rs.getLong("id"));
@@ -76,7 +75,7 @@ public class CodigoBarrasDaoImpl implements GenericDao<CodigoBarras> {
 
     @Override
     public void actualizar(CodigoBarras codigoBarras, Connection connection) throws SQLException {
-        String sql = "UPDATE codigo_barras SET tipo = ?, valor = ?, fecha_asignacion = ?, observaciones = ? WHERE id = ?";
+        String sql = "UPDATE codigos_barras SET tipo = ?, valor = ?, fecha_asignacion = ?, observaciones = ? WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, codigoBarras.getTipo().name());
             ps.setString(2, codigoBarras.getValor());
@@ -89,10 +88,67 @@ public class CodigoBarrasDaoImpl implements GenericDao<CodigoBarras> {
 
     @Override
     public void eliminar(long id, Connection connection) throws SQLException {
-        String sql = "UPDATE codigo_barras SET eliminado = true WHERE id = ?";
+        String sql = "UPDATE codigos_barras SET eliminado = true WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setLong(1, id);
             ps.executeUpdate();
         }
+    }
+
+    /**
+     * Busca códigos de barras activos que coincidan con un valor específico.
+     *
+     * @param valor El valor exacto del código de barras a buscar.
+     * @param connection La conexión a la BD.
+     * @return Una lista de códigos de barras (usualmente uno) que coinciden con
+     * el valor.
+     */
+    public List<CodigoBarras> buscarPorValor(String valor, Connection connection) throws SQLException {
+        List<CodigoBarras> codigos = new ArrayList<>();
+        String sql = "SELECT * FROM codigos_barras WHERE valor = ? AND eliminado = false";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, valor);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    CodigoBarras codigoBarras = new CodigoBarras();
+                    codigoBarras.setId(rs.getLong("id"));
+                    codigoBarras.setTipo(TipoCodigoBarras.valueOf(rs.getString("tipo")));
+                    codigoBarras.setValor(rs.getString("valor"));
+                    codigoBarras.setFechaAsignacion(rs.getDate("fecha_asignacion").toLocalDate());
+                    codigoBarras.setObservaciones(rs.getString("observaciones"));
+                    codigoBarras.setEliminado(rs.getBoolean("eliminado"));
+                    codigos.add(codigoBarras);
+                }
+            }
+        }
+        return codigos;
+    }
+
+    /**
+     * Filtra códigos de barras activos por su tipo.
+     *
+     * @param tipo El tipo (EAN13, EAN8, UPC) a buscar.
+     * @param connection La conexión a la BD.
+     * @return Una lista de códigos de barras que pertenecen a ese tipo.
+     */
+    public List<CodigoBarras> buscarPorTipo(TipoCodigoBarras tipo, Connection connection) throws SQLException {
+        List<CodigoBarras> codigos = new ArrayList<>();
+        String sql = "SELECT * FROM codigos_barras WHERE tipo = ? AND eliminado = false";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, tipo.name()); // Convertimos el Enum a String
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    CodigoBarras codigoBarras = new CodigoBarras();
+                    codigoBarras.setId(rs.getLong("id"));
+                    codigoBarras.setTipo(TipoCodigoBarras.valueOf(rs.getString("tipo")));
+                    codigoBarras.setValor(rs.getString("valor"));
+                    codigoBarras.setFechaAsignacion(rs.getDate("fecha_asignacion").toLocalDate());
+                    codigoBarras.setObservaciones(rs.getString("observaciones"));
+                    codigoBarras.setEliminado(rs.getBoolean("eliminado"));
+                    codigos.add(codigoBarras);
+                }
+            }
+        }
+        return codigos;
     }
 }

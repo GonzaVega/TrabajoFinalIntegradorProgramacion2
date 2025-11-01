@@ -13,7 +13,7 @@ public class ProductoDaoImpl implements GenericDao<Producto> {
 
     @Override
     public Producto crear(Producto producto, Connection connection) throws SQLException {
-        String sql = "INSERT INTO productos (nombre, marca, categoria, precio, peso, eliminado, codigo_barras_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO productos (nombre, marca, categoria, precio, peso, eliminado, codigos_barras_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, producto.getNombre());
             ps.setString(2, producto.getMarca());
@@ -25,7 +25,12 @@ public class ProductoDaoImpl implements GenericDao<Producto> {
                 ps.setNull(5, Types.DOUBLE);
             }
             ps.setBoolean(6, producto.isEliminado());
-            ps.setLong(7, producto.getCodigoBarras().getId()); // Asumimos que el CodigoBarras ya tiene ID
+
+            if (producto.getCodigoBarras() != null && producto.getCodigoBarras().getId() != null) {
+                ps.setLong(7, producto.getCodigoBarras().getId());
+            } else {
+                ps.setNull(7, Types.BIGINT); // Si no hay código, insertamos NULL
+            }
 
             ps.executeUpdate();
 
@@ -40,11 +45,10 @@ public class ProductoDaoImpl implements GenericDao<Producto> {
 
     @Override
     public Producto leer(long id, Connection connection) throws SQLException {
-        // Usamos un JOIN para traer también los datos del código de barras asociado
-        String sql = "SELECT p.*, cb.tipo, cb.valor, cb.fecha_asignacion, cb.observaciones " +
-                     "FROM productos p " +
-                     "JOIN codigos_barras cb ON p.codigo_barras_id = cb.id " +
-                     "WHERE p.id = ? AND p.eliminado = false";
+        String sql = "SELECT p.*, cb.id as cb_id, cb.tipo, cb.valor, cb.fecha_asignacion, cb.observaciones "
+                + "FROM productos p "
+                + "LEFT JOIN codigos_barras cb ON p.codigos_barras_id = cb.id "
+                + "WHERE p.id = ? AND p.eliminado = false";
         Producto producto = null;
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setLong(1, id);
@@ -57,20 +61,17 @@ public class ProductoDaoImpl implements GenericDao<Producto> {
                     producto.setCategoria(rs.getString("categoria"));
                     producto.setPrecio(rs.getDouble("precio"));
                     producto.setPeso(rs.getDouble("peso"));
-                    if (rs.wasNull()) { // El peso puede ser nulo
-                        producto.setPeso(null);
-                    }
-                    producto.setEliminado(rs.getBoolean("eliminado"));
-
-                    // Construimos el objeto CodigoBarras asociado
-                    CodigoBarras codigoBarras = new CodigoBarras();
-                    codigoBarras.setId(rs.getLong("codigo_barras_id"));
-                    codigoBarras.setTipo(TipoCodigoBarras.valueOf(rs.getString("tipo")));
-                    codigoBarras.setValor(rs.getString("valor"));
-                    codigoBarras.setFechaAsignacion(rs.getDate("fecha_asignacion").toLocalDate());
-                    codigoBarras.setObservaciones(rs.getString("observaciones"));
+                    long codigoBarrasId = rs.getLong("cb_id");
                     
-                    producto.setCodigoBarras(codigoBarras);
+                    if (!rs.wasNull()) { // Verificamos si el ID del código no era NULL
+                        CodigoBarras codigoBarras = new CodigoBarras();
+                        codigoBarras.setId(codigoBarrasId);
+                        codigoBarras.setTipo(TipoCodigoBarras.valueOf(rs.getString("tipo")));
+                        codigoBarras.setValor(rs.getString("valor"));
+                        codigoBarras.setFechaAsignacion(rs.getDate("fecha_asignacion").toLocalDate());
+                        codigoBarras.setObservaciones(rs.getString("observaciones"));
+                        producto.setCodigoBarras(codigoBarras);
+                    }
                 }
             }
         }
@@ -79,35 +80,31 @@ public class ProductoDaoImpl implements GenericDao<Producto> {
 
     @Override
     public List<Producto> leerTodos(Connection connection) throws SQLException {
-        String sql = "SELECT p.*, cb.tipo, cb.valor, cb.fecha_asignacion, cb.observaciones " +
-                     "FROM productos p " +
-                     "JOIN codigos_barras cb ON p.codigo_barras_id = cb.id " +
-                     "WHERE p.eliminado = false";
+        String sql = "SELECT p.*, cb.id as cb_id, cb.tipo, cb.valor, cb.fecha_asignacion, cb.observaciones "
+                + "FROM productos p "
+                + "LEFT JOIN codigos_barras cb ON p.codigos_barras_id = cb.id "
+                + "WHERE p.eliminado = false";
         List<Producto> productos = new ArrayList<>();
-        try (PreparedStatement ps = connection.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                 Producto producto = new Producto();
-                    producto.setId(rs.getLong("id"));
-                    producto.setNombre(rs.getString("nombre"));
-                    producto.setMarca(rs.getString("marca"));
-                    producto.setCategoria(rs.getString("categoria"));
-                    producto.setPrecio(rs.getDouble("precio"));
-                    producto.setPeso(rs.getDouble("peso"));
-                    if (rs.wasNull()) {
-                        producto.setPeso(null);
-                    }
-                    producto.setEliminado(rs.getBoolean("eliminado"));
-
+                Producto producto = new Producto();
+                producto.setId(rs.getLong("id"));
+                producto.setNombre(rs.getString("nombre"));
+                producto.setMarca(rs.getString("marca"));
+                producto.setCategoria(rs.getString("categoria"));
+                producto.setPrecio(rs.getDouble("precio"));
+                producto.setPeso(rs.getDouble("peso"));
+                long codigoBarrasId = rs.getLong("cb_id");
+                if (!rs.wasNull()) {
                     CodigoBarras codigoBarras = new CodigoBarras();
-                    codigoBarras.setId(rs.getLong("codigo_barras_id"));
+                    codigoBarras.setId(codigoBarrasId);
                     codigoBarras.setTipo(TipoCodigoBarras.valueOf(rs.getString("tipo")));
                     codigoBarras.setValor(rs.getString("valor"));
                     codigoBarras.setFechaAsignacion(rs.getDate("fecha_asignacion").toLocalDate());
                     codigoBarras.setObservaciones(rs.getString("observaciones"));
-                    
                     producto.setCodigoBarras(codigoBarras);
-                    productos.add(producto);
+                }
+                productos.add(producto);
             }
         }
         return productos;
@@ -115,7 +112,7 @@ public class ProductoDaoImpl implements GenericDao<Producto> {
 
     @Override
     public void actualizar(Producto producto, Connection connection) throws SQLException {
-        String sql = "UPDATE productos SET nombre = ?, marca = ?, categoria = ?, precio = ?, peso = ?, codigo_barras_id = ? WHERE id = ?";
+        String sql = "UPDATE productos SET nombre = ?, marca = ?, categoria = ?, precio = ?, peso = ?, codigos_barras_id = ? WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, producto.getNombre());
             ps.setString(2, producto.getMarca());
@@ -126,7 +123,13 @@ public class ProductoDaoImpl implements GenericDao<Producto> {
             } else {
                 ps.setNull(5, Types.DOUBLE);
             }
-            ps.setLong(6, producto.getCodigoBarras().getId());
+
+            if (producto.getCodigoBarras() != null && producto.getCodigoBarras().getId() != null) {
+                ps.setLong(6, producto.getCodigoBarras().getId());
+            } else {
+                ps.setNull(6, Types.BIGINT);
+            }
+
             ps.setLong(7, producto.getId());
             ps.executeUpdate();
         }
@@ -140,5 +143,87 @@ public class ProductoDaoImpl implements GenericDao<Producto> {
             ps.setLong(1, id);
             ps.executeUpdate();
         }
+    }
+
+    /**
+     * Encuentra todos los productos activos asociados a un ID de código de
+     * barras específico.
+     *
+     * @param codigoBarrasId El ID del código de barras a buscar.
+     * @param connection La conexión a la BD.
+     * @return Una lista de productos que tienen asignado ese código.
+     */
+    public List<Producto> buscarPorCodigoBarras(Long codigoBarrasId, Connection connection) throws SQLException {
+        List<Producto> productos = new ArrayList<>();
+        // No necesitamos JOIN aquí, ya que el servicio solo necesita saber SI existe un producto con ese código.
+        String sql = "SELECT * FROM productos WHERE codigos_barras_id = ? AND eliminado = false";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setLong(1, codigoBarrasId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Producto producto = new Producto();
+                    producto.setId(rs.getLong("id"));
+                    producto.setNombre(rs.getString("nombre"));
+                    producto.setMarca(rs.getString("marca"));
+                    producto.setCategoria(rs.getString("categoria"));
+                    producto.setPrecio(rs.getDouble("precio"));
+                    producto.setPeso(rs.getDouble("peso"));
+                    if (rs.wasNull()) {
+                        producto.setPeso(null);
+                    }
+                    producto.setEliminado(rs.getBoolean("eliminado"));
+                    productos.add(producto);
+                }
+            }
+        }
+        return productos;
+    }
+
+    /**
+     * Filtra productos activos por su categoría, ignorando mayúsculas y
+     * minúsculas.
+     *
+     * @param categoria La categoría a buscar.
+     * @param connection La conexión a la BD.
+     * @return Una lista de productos que pertenecen a esa categoría.
+     */
+    public List<Producto> buscarPorCategoria(String categoria, Connection connection) throws SQLException {
+        List<Producto> productos = new ArrayList<>();
+        // Usamos LEFT JOIN para manejar correctamente los productos sin código de barras
+        String sql = "SELECT p.*, cb.id as cb_id, cb.tipo, cb.valor, cb.fecha_asignacion, cb.observaciones "
+                + "FROM productos p "
+                + "LEFT JOIN codigos_barras cb ON p.codigos_barras_id = cb.id "
+                + "WHERE LOWER(p.categoria) = ? AND p.eliminado = false";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, categoria.toLowerCase());
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Producto producto = new Producto();
+                    producto.setId(rs.getLong("id"));
+                    producto.setNombre(rs.getString("nombre"));
+                    producto.setMarca(rs.getString("marca"));
+                    producto.setCategoria(rs.getString("categoria"));
+                    producto.setPrecio(rs.getDouble("precio"));
+                    producto.setPeso(rs.getDouble("peso"));
+                    if (rs.wasNull()) {
+                        producto.setPeso(null);
+                    }
+                    producto.setEliminado(rs.getBoolean("eliminado"));
+
+                    long codigoBarrasId = rs.getLong("cb_id");
+                    if (!rs.wasNull()) {
+                        CodigoBarras codigoBarras = new CodigoBarras();
+                        codigoBarras.setId(codigoBarrasId);
+                        codigoBarras.setTipo(TipoCodigoBarras.valueOf(rs.getString("tipo")));
+                        codigoBarras.setValor(rs.getString("valor"));
+                        codigoBarras.setFechaAsignacion(rs.getDate("fecha_asignacion").toLocalDate());
+                        codigoBarras.setObservaciones(rs.getString("observaciones"));
+                        producto.setCodigoBarras(codigoBarras);
+                    }
+                    productos.add(producto);
+                }
+            }
+        }
+        return productos;
     }
 }
