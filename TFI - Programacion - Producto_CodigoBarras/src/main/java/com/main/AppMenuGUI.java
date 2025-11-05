@@ -26,16 +26,15 @@ public class AppMenuGUI extends JFrame {
 
     private void configurarVentana() {
         setTitle("Sistema de Gestión - Modo Gráfico");
-        setSize(700, 500);
+        setSize(700, 550);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
     }
 
     private void crearInterfaz() {
-        JPanel panel = new JPanel(new GridLayout(7, 2, 10, 10));
+        JPanel panel = new JPanel(new GridLayout(8, 2, 10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Botones principales
         panel.add(crearBoton("➕ Crear Producto", new Color(40, 167, 69), this::crearProducto));
         panel.add(crearBoton("➕ Crear Código de Barras", new Color(40, 167, 69), this::crearCodigoBarras));
 
@@ -49,9 +48,12 @@ public class AppMenuGUI extends JFrame {
         panel.add(crearBoton("📂 Buscar por Tipo", new Color(108, 117, 125), this::buscarPorTipo));
 
         panel.add(crearBoton("✏️ Editar Producto", new Color(255, 193, 7), this::editarProducto));
+        panel.add(crearBoton("✏️ Editar Código", new Color(255, 193, 7), this::editarCodigoBarras));
+
+        panel.add(crearBoton("🔗 Asignar Código a Producto", new Color(111, 66, 193), this::asignarCodigoAProducto));
         panel.add(crearBoton("🗑️ Eliminar Producto", new Color(220, 53, 69), this::eliminarProducto));
 
-        panel.add(crearBoton("✏️ Editar Código", new Color(255, 193, 7), this::editarCodigoBarras));
+        panel.add(crearBoton("🗑️ Eliminar Código", new Color(220, 53, 69), this::eliminarCodigoBarras));
         panel.add(crearBoton("❌ Salir", new Color(52, 58, 64), () -> System.exit(0)));
 
         add(panel);
@@ -68,16 +70,16 @@ public class AppMenuGUI extends JFrame {
         return btn;
     }
 
-    // ==================== PRODUCTOS ====================
-
-    private void crearProducto() {
+   private void crearProducto() {
         JTextField txtNombre = new JTextField(20);
         JTextField txtMarca = new JTextField(20);
         JTextField txtCategoria = new JTextField(20);
         JTextField txtPrecio = new JTextField(10);
         JTextField txtPeso = new JTextField(10);
+        
+        JCheckBox chkAsignarCodigo = new JCheckBox("¿Asignar código de barras?");
 
-        JPanel form = new JPanel(new GridLayout(5, 2, 5, 5));
+        JPanel form = new JPanel(new GridLayout(6, 2, 5, 5));
         form.add(new JLabel("Nombre:"));
         form.add(txtNombre);
         form.add(new JLabel("Marca:"));
@@ -88,20 +90,50 @@ public class AppMenuGUI extends JFrame {
         form.add(txtPrecio);
         form.add(new JLabel("Peso (opcional):"));
         form.add(txtPeso);
+        form.add(new JLabel(""));
+        form.add(chkAsignarCodigo);
 
         int result = JOptionPane.showConfirmDialog(this, form, "Crear Producto", JOptionPane.OK_CANCEL_OPTION);
 
         if (result == JOptionPane.OK_OPTION) {
             try {
+                String nombre = txtNombre.getText().trim();
+                String marca = txtMarca.getText().trim();
+                String categoria = txtCategoria.getText().trim();
+                String precioStr = txtPrecio.getText().trim();
+
+                if (nombre.isEmpty() || marca.isEmpty() || categoria.isEmpty() || precioStr.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "❌ Nombre, Marca, Categoría y Precio son obligatorios", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                double precio = Double.parseDouble(precioStr);
+                if (precio <= 0) {
+                    JOptionPane.showMessageDialog(this, "❌ El precio debe ser mayor a 0", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
                 Producto p = new Producto();
-                p.setNombre(txtNombre.getText().trim());
-                p.setMarca(txtMarca.getText().trim());
-                p.setCategoria(txtCategoria.getText().trim());
-                p.setPrecio(Double.parseDouble(txtPrecio.getText().trim()));
+                p.setNombre(nombre);
+                p.setMarca(marca);
+                p.setCategoria(categoria);
+                p.setPrecio(precio);
 
                 String pesoStr = txtPeso.getText().trim();
                 if (!pesoStr.isEmpty()) {
-                    p.setPeso(Double.parseDouble(pesoStr));
+                    double peso = Double.parseDouble(pesoStr);
+                    if (peso < 0) {
+                        JOptionPane.showMessageDialog(this, "❌ El peso no puede ser negativo", "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    p.setPeso(peso);
+                }
+
+                if (chkAsignarCodigo.isSelected()) {
+                    CodigoBarras codigo = seleccionarOCrearCodigoBarras();
+                    if (codigo != null) {
+                        p.setCodigoBarras(codigo);
+                    }
                 }
 
                 Producto resultado = productoService.insertar(p);
@@ -118,6 +150,165 @@ public class AppMenuGUI extends JFrame {
         }
     }
 
+    private CodigoBarras seleccionarOCrearCodigoBarras() {
+        String[] opciones = {"Seleccionar existente", "Crear nuevo", "Cancelar"};
+        int opcion = JOptionPane.showOptionDialog(this, "¿Cómo desea asignar el código de barras?",
+                "Asignar Código", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,
+                null, opciones, opciones[0]);
+
+        if (opcion == 0) {
+            return seleccionarCodigoExistente();
+        } else if (opcion == 1) {
+            return crearCodigoBarrasRapido();
+        }
+        return null;
+    }
+
+    private CodigoBarras seleccionarCodigoExistente() {
+        List<CodigoBarras> codigos = codigoBarrasService.getAll();
+        
+        if (codigos.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "No hay códigos de barras disponibles");
+            return null;
+        }
+
+        String[] opciones = new String[codigos.size()];
+        for (int i = 0; i < codigos.size(); i++) {
+            CodigoBarras cb = codigos.get(i);
+            opciones[i] = String.format("ID: %d - %s (%s)", cb.getId(), cb.getValor(), cb.getTipo());
+        }
+
+        String seleccion = (String) JOptionPane.showInputDialog(this, "Seleccione un código:",
+                "Códigos Disponibles", JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
+
+        if (seleccion != null) {
+            String idStr = seleccion.split(" ")[1];
+            long id = Long.parseLong(idStr);
+            return codigoBarrasService.getById(id);
+        }
+        return null;
+    }
+
+    private CodigoBarras crearCodigoBarrasRapido() {
+        JTextField txtValor = new JTextField(20);
+        JComboBox<TipoCodigoBarras> cboTipo = new JComboBox<>(TipoCodigoBarras.values());
+        JTextField txtObservaciones = new JTextField(20);
+
+        JPanel form = new JPanel(new GridLayout(3, 2, 5, 5));
+        form.add(new JLabel("Valor:"));
+        form.add(txtValor);
+        form.add(new JLabel("Tipo:"));
+        form.add(cboTipo);
+        form.add(new JLabel("Observaciones:"));
+        form.add(txtObservaciones);
+
+        int result = JOptionPane.showConfirmDialog(this, form, "Crear Código Rápido", JOptionPane.OK_CANCEL_OPTION);
+
+        if (result == JOptionPane.OK_OPTION) {
+            try {
+                String valor = txtValor.getText().trim();
+                TipoCodigoBarras tipo = (TipoCodigoBarras) cboTipo.getSelectedItem();
+
+                if (!validarFormatoCodigoBarras(valor, tipo)) {
+                    return null;
+                }
+
+                CodigoBarras cb = new CodigoBarras();
+                cb.setValor(valor);
+                cb.setTipo(tipo);
+                cb.setFechaAsignacion(LocalDate.now());
+                cb.setObservaciones(txtObservaciones.getText().trim());
+
+                CodigoBarras resultado = codigoBarrasService.insertar(cb);
+                
+                if (resultado == null) {
+                    JOptionPane.showMessageDialog(this, 
+                        "❌ No se pudo crear el código de barras.\n\n" +
+                        "Posibles causas:\n" +
+                        "• El código ya existe en la base de datos\n" +
+                        "• Error de conexión\n\n" +
+                        "Puede seleccionar un código existente o intentar con otro valor.", 
+                        "Error al Crear Código", 
+                        JOptionPane.ERROR_MESSAGE);
+                    return null;
+                }
+                
+                return resultado;
+                
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, 
+                    "❌ Error inesperado: " + e.getMessage(), 
+                    "Error", 
+                    JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        return null;
+    }
+
+    private boolean validarFormatoCodigoBarras(String valor, TipoCodigoBarras tipo) {
+        switch (tipo) {
+            case EAN13:
+                if (!valor.matches("\\d{13}")) {
+                    JOptionPane.showMessageDialog(this, "❌ EAN-13 debe tener exactamente 13 dígitos", "Error", JOptionPane.ERROR_MESSAGE);
+                    return false;
+                }
+                break;
+            case EAN8:
+                if (!valor.matches("\\d{8}")) {
+                    JOptionPane.showMessageDialog(this, "❌ EAN-8 debe tener exactamente 8 dígitos", "Error", JOptionPane.ERROR_MESSAGE);
+                    return false;
+                }
+                break;
+            case UPC:
+                if (!valor.matches("\\d{12}")) {
+                    JOptionPane.showMessageDialog(this, "❌ UPC debe tener exactamente 12 dígitos", "Error", JOptionPane.ERROR_MESSAGE);
+                    return false;
+                }
+                break;
+            default:
+                if (valor.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "❌ El valor no puede estar vacío", "Error", JOptionPane.ERROR_MESSAGE);
+                    return false;
+                }
+                break;
+        }
+        return true;
+    }
+
+    private void asignarCodigoAProducto() {
+        String idStr = JOptionPane.showInputDialog(this, "Ingrese ID del producto:");
+        if (idStr != null && !idStr.trim().isEmpty()) {
+            try {
+                long id = Long.parseLong(idStr.trim());
+                Producto p = productoService.getById(id);
+
+                if (p == null) {
+                    JOptionPane.showMessageDialog(this, "❌ Producto no encontrado", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                String info = String.format("Producto: %s\nCódigo actual: %s",
+                        p.getNombre(),
+                        p.getCodigoBarras() != null ? p.getCodigoBarras().getValor() : "Sin código");
+
+                JOptionPane.showMessageDialog(this, info, "Producto Seleccionado", JOptionPane.INFORMATION_MESSAGE);
+
+                CodigoBarras codigo = seleccionarOCrearCodigoBarras();
+                if (codigo != null) {
+                    p.setCodigoBarras(codigo);
+                    Producto resultado = productoService.actualizar(p);
+                    if (resultado != null) {
+                        JOptionPane.showMessageDialog(this, "✅ Código de barras asignado correctamente");
+                    } else {
+                        JOptionPane.showMessageDialog(this, "❌ Error al asignar código", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "❌ ID inválido", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
     private void listarProductos() {
         List<Producto> productos = productoService.getAll();
 
@@ -126,8 +317,8 @@ public class AppMenuGUI extends JFrame {
             return;
         }
 
-        String[] columnas = {"ID", "Nombre", "Marca", "Categoría", "Precio", "Peso"};
-        Object[][] datos = new Object[productos.size()][6];
+        String[] columnas = {"ID", "Nombre", "Marca", "Categoría", "Precio", "Peso", "Código"};
+        Object[][] datos = new Object[productos.size()][7];
 
         for (int i = 0; i < productos.size(); i++) {
             Producto p = productos.get(i);
@@ -137,6 +328,7 @@ public class AppMenuGUI extends JFrame {
             datos[i][3] = p.getCategoria();
             datos[i][4] = String.format("$%.2f", p.getPrecio());
             datos[i][5] = p.getPeso() != null ? String.format("%.2f kg", p.getPeso()) : "N/A";
+            datos[i][6] = p.getCodigoBarras() != null ? p.getCodigoBarras().getValor() : "Sin código";
         }
 
         JTable table = new JTable(datos, columnas);
@@ -155,9 +347,10 @@ public class AppMenuGUI extends JFrame {
 
                 if (p != null) {
                     String info = String.format(
-                            "ID: %d\nNombre: %s\nMarca: %s\nCategoría: %s\nPrecio: $%.2f\nPeso: %s",
+                            "ID: %d\nNombre: %s\nMarca: %s\nCategoría: %s\nPrecio: $%.2f\nPeso: %s\nCódigo de Barras: %s",
                             p.getId(), p.getNombre(), p.getMarca(), p.getCategoria(), p.getPrecio(),
-                            p.getPeso() != null ? p.getPeso() + " kg" : "N/A"
+                            p.getPeso() != null ? p.getPeso() + " kg" : "N/A",
+                            p.getCodigoBarras() != null ? p.getCodigoBarras().getValor() + " (" + p.getCodigoBarras().getTipo() + ")" : "Sin código"
                     );
                     JOptionPane.showMessageDialog(this, info, "Producto Encontrado", JOptionPane.INFORMATION_MESSAGE);
                 } else {
@@ -236,8 +429,10 @@ public class AppMenuGUI extends JFrame {
                 JTextField txtCategoria = new JTextField(p.getCategoria(), 20);
                 JTextField txtPrecio = new JTextField(String.valueOf(p.getPrecio()), 10);
                 JTextField txtPeso = new JTextField(p.getPeso() != null ? String.valueOf(p.getPeso()) : "", 10);
+                
+                JCheckBox chkModificarCodigo = new JCheckBox("¿Modificar código de barras?");
 
-                JPanel form = new JPanel(new GridLayout(5, 2, 5, 5));
+                JPanel form = new JPanel(new GridLayout(6, 2, 5, 5));
                 form.add(new JLabel("Nombre:"));
                 form.add(txtNombre);
                 form.add(new JLabel("Marca:"));
@@ -248,6 +443,8 @@ public class AppMenuGUI extends JFrame {
                 form.add(txtPrecio);
                 form.add(new JLabel("Peso:"));
                 form.add(txtPeso);
+                form.add(new JLabel("Código actual: " + (p.getCodigoBarras() != null ? p.getCodigoBarras().getValor() : "Sin código")));
+                form.add(chkModificarCodigo);
 
                 int result = JOptionPane.showConfirmDialog(this, form, "Editar Producto", JOptionPane.OK_CANCEL_OPTION);
 
@@ -259,6 +456,11 @@ public class AppMenuGUI extends JFrame {
 
                     String pesoStr = txtPeso.getText().trim();
                     p.setPeso(!pesoStr.isEmpty() ? Double.parseDouble(pesoStr) : null);
+
+                    if (chkModificarCodigo.isSelected()) {
+                        CodigoBarras codigo = seleccionarOCrearCodigoBarras();
+                        p.setCodigoBarras(codigo);
+                    }
 
                     Producto resultado = productoService.actualizar(p);
                     if (resultado != null) {
@@ -272,8 +474,6 @@ public class AppMenuGUI extends JFrame {
             }
         }
     }
-
-    // ==================== CÓDIGOS DE BARRAS ====================
 
     private void crearCodigoBarras() {
         JTextField txtValor = new JTextField(20);
@@ -292,17 +492,31 @@ public class AppMenuGUI extends JFrame {
 
         if (result == JOptionPane.OK_OPTION) {
             try {
+                String valor = txtValor.getText().trim();
+                TipoCodigoBarras tipo = (TipoCodigoBarras) cboTipo.getSelectedItem();
+
+                if (!validarFormatoCodigoBarras(valor, tipo)) {
+                    return;
+                }
+
                 CodigoBarras cb = new CodigoBarras();
-                cb.setValor(txtValor.getText().trim());
-                cb.setTipo((TipoCodigoBarras) cboTipo.getSelectedItem());
+                cb.setValor(valor);
+                cb.setTipo(tipo);
                 cb.setFechaAsignacion(LocalDate.now());
                 cb.setObservaciones(txtObservaciones.getText().trim());
 
                 CodigoBarras resultado = codigoBarrasService.insertar(cb);
+                
                 if (resultado != null) {
                     JOptionPane.showMessageDialog(this, "✅ Código creado con ID: " + resultado.getId());
                 } else {
-                    JOptionPane.showMessageDialog(this, "❌ Error al crear código", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, 
+                        "❌ No se pudo crear el código de barras.\n\n" +
+                        "Posibles causas:\n" +
+                        "• El código '" + valor + "' ya existe en la base de datos\n" +
+                        "• Error de conexión a la base de datos", 
+                        "Error al Crear Código", 
+                        JOptionPane.ERROR_MESSAGE);
                 }
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this, "❌ Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -388,19 +602,54 @@ public class AppMenuGUI extends JFrame {
                 int result = JOptionPane.showConfirmDialog(this, form, "Editar Código de Barras", JOptionPane.OK_CANCEL_OPTION);
 
                 if (result == JOptionPane.OK_OPTION) {
-                    cb.setValor(txtValor.getText().trim());
-                    cb.setTipo((TipoCodigoBarras) cboTipo.getSelectedItem());
+                    String valor = txtValor.getText().trim();
+                    TipoCodigoBarras tipo = (TipoCodigoBarras) cboTipo.getSelectedItem();
+
+                    if (!validarFormatoCodigoBarras(valor, tipo)) {
+                        return;
+                    }
+
+                    cb.setValor(valor);
+                    cb.setTipo(tipo);
                     cb.setObservaciones(txtObservaciones.getText().trim());
 
                     CodigoBarras resultado = codigoBarrasService.actualizar(cb);
+                    
                     if (resultado != null) {
                         JOptionPane.showMessageDialog(this, "✅ Código actualizado");
                     } else {
-                        JOptionPane.showMessageDialog(this, "❌ Error al actualizar", "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(this, 
+                            "❌ No se pudo actualizar el código de barras.\n\n" +
+                            "Posibles causas:\n" +
+                            "• El código '" + valor + "' ya existe para otro registro\n" +
+                            "• Error de conexión a la base de datos", 
+                            "Error al Actualizar", 
+                            JOptionPane.ERROR_MESSAGE);
                     }
                 }
             } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(this, "❌ Datos inválidos", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+   private void eliminarCodigoBarras() {
+        String idStr = JOptionPane.showInputDialog(this, "Ingrese ID del código a eliminar:");
+        if (idStr != null && !idStr.trim().isEmpty()) {
+            try {
+                long id = Long.parseLong(idStr.trim());
+                int confirm = JOptionPane.showConfirmDialog(this, "¿Está seguro de eliminar el código?", "Confirmar", JOptionPane.YES_NO_OPTION);
+
+                if (confirm == JOptionPane.YES_OPTION) {
+                    CodigoBarras resultado = codigoBarrasService.eliminar(id);
+                    if (resultado != null) {
+                        JOptionPane.showMessageDialog(this, "✅ Código eliminado");
+                    } else {
+                        JOptionPane.showMessageDialog(this, "❌ Error al eliminar", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "❌ ID inválido", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }

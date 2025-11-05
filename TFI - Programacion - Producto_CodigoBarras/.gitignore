@@ -1,11 +1,24 @@
-# Archivos compilados
-target/
-*.class
+# Maven
+/target/
 
-# NetBeans
-nbproject/private/
-build/
+# IDEs
+/.idea/
+/.vscode/
+*.iml
+.classpath
+.project
+.settings/
 
-# Base de datos (cada uno tendrá su config)
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs / temp
+*.log
+/out/
+tmp/
+
+# Config DB local (explícito)
+/src/main/resources/db.properties
+db.properties
 database.properties
-d.properties

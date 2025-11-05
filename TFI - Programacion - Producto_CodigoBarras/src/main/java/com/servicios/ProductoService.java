@@ -37,8 +37,8 @@ public class ProductoService implements GenericService<Producto> {
 			return false;
 		}
 
-		if (producto.getPeso() != null && producto.getPeso() <= 0) {
-			ManejadorExcepciones.manejarErrorValidacion("Peso", "Debe ser mayor a 0 o null");
+		if (producto.getPeso() != null && producto.getPeso() < 0) {
+			ManejadorExcepciones.manejarErrorValidacion("Peso", "El peso debe ser positivo.");
 			return false;
 		}
 

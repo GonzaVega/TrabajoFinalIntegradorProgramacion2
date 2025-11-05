@@ -2,7 +2,7 @@ package com.main;
 
 import java.time.LocalDate;
 import java.util.Scanner;
-import java.util.ArrayList;
+import java.util.List;
 
 import com.entities.CodigoBarras;
 import com.entities.Producto;
@@ -41,31 +41,54 @@ public class ProductoController {
 
   private CodigoBarras crearNuevoCodigoBarras() {
     System.out.println("--Creación rápida de código de barras--");
-    System.out.println("Valor:");
-    String valor = scanner.nextLine();
-    System.out.println("Observaciones:");
-    String observaciones = scanner.nextLine();
     
-    codigoBarrasController.mostrarTiposCodigoBarras();
-    TipoCodigoBarras tipoSeleccionado = codigoBarrasController.seleccionarTipoCodigoBarras();
-    
-    if (tipoSeleccionado == null) {
+    try {
+      String observaciones = InputValidator.leerString(scanner, "Observaciones (opcional):");
+      
+      codigoBarrasController.mostrarTiposCodigoBarras();
+      TipoCodigoBarras tipoSeleccionado = codigoBarrasController.seleccionarTipoCodigoBarras();
+      
+      if (tipoSeleccionado == null) {
         System.out.println("❌ Tipo inválido. Código no creado.");
         return null;
-    }
-    
-    CodigoBarras nuevoCodigo = new CodigoBarras();
-    nuevoCodigo.setValor(valor);
-    nuevoCodigo.setObservaciones(observaciones);
-    nuevoCodigo.setFechaAsignacion(LocalDate.now());
-    nuevoCodigo.setTipo(tipoSeleccionado);
-    
-    CodigoBarras creado = codigoBarrasService.insertar(nuevoCodigo);
-    if (creado != null) {
+      }
+
+      String valor;
+      switch (tipoSeleccionado) {
+        case EAN13:
+          valor = InputValidator.leerCodigoBarras(scanner, "Valor (13 dígitos):", 13);
+          break;
+        case EAN8:
+          valor = InputValidator.leerCodigoBarras(scanner, "Valor (8 dígitos):", 8);
+          break;
+        case UPC:
+          valor = InputValidator.leerCodigoBarras(scanner, "Valor (12 dígitos):", 12);
+          break;
+        default:
+          valor = InputValidator.leerStringNoVacio(scanner, "Valor:");
+          break;
+      }
+      
+      CodigoBarras nuevoCodigo = new CodigoBarras();
+      nuevoCodigo.setValor(valor);
+      nuevoCodigo.setObservaciones(observaciones);
+      nuevoCodigo.setFechaAsignacion(LocalDate.now());
+      nuevoCodigo.setTipo(tipoSeleccionado);
+      
+      CodigoBarras creado = codigoBarrasService.insertar(nuevoCodigo);
+      
+      if (creado != null) {
         System.out.println("✅ Código de barras creado: " + creado);
+        return creado;
+      } else {
+        System.out.println("❌ Error al crear el código de barras. Verifique los datos ingresados.");
+        return null;
+      }
+      
+    } catch (Exception e) {
+      System.err.println("❌ Error inesperado al crear código de barras: " + e.getMessage());
+      return null;
     }
-    
-    return creado;
   }
 
   private CodigoBarras seleccionarCodigoBarrasCompleto() {
@@ -95,16 +118,16 @@ public class ProductoController {
   public void crearProducto() {
     System.out.println("--Creación de nuevo producto--");
     System.out.println("Por favor, ingrese los datos del producto:");
-    String nombre = InputValidator.leerString(scanner, "Nombre:");
-    String marca = InputValidator.leerString(scanner, "Marca:");
-    String categoria = InputValidator.leerStringMayusculas(scanner, "Categoría:");
-    Double precio = InputValidator.leerDoubleSeguro(scanner, "Precio:");
+    String nombre = InputValidator.leerStringNoVacio(scanner, "Nombre:");
+    String marca = InputValidator.leerStringNoVacio(scanner, "Marca:");
+    String categoria = InputValidator.leerStringNoVacio(scanner, "Categoría:").toUpperCase();
+    Double precio = InputValidator.leerDoublePositivo(scanner, "Precio:");
   
     System.out.println("¿Desea ingresar el peso del producto?");
     String ingresarPeso = InputValidator.leerStringMayusculas(scanner, "(S/N):");
     Double peso = null;
     if (ingresarPeso.equals("S")) {
-      peso = InputValidator.leerDoubleSeguro(scanner, "Peso:");
+      peso = InputValidator.leerDoubleNoNegativo(scanner, "Peso:");
     }
 
     CodigoBarras codigo = seleccionarCodigoBarrasCompleto();
@@ -129,24 +152,20 @@ public class ProductoController {
     System.out.println("Producto encontrado: " + productoEditar);
     System.out.println("Ingrese los nuevos datos del producto (deje en blanco para mantener el valor actual):");
   
-    String nombre = InputValidator.leerString(scanner, "Nombre [" + productoEditar.getNombre() + "]:");
-    if (!nombre.isEmpty()) productoEditar.setNombre(nombre);
+     String nombre = InputValidator.leerStringOpcional(scanner, "Nuevo nombre:", productoEditar.getNombre());
+    productoEditar.setNombre(nombre);
   
-    String marca = InputValidator.leerString(scanner, "Marca [" + productoEditar.getMarca() + "]:");
-    if (!marca.isEmpty()) productoEditar.setMarca(marca);
+    String marca = InputValidator.leerStringOpcional(scanner, "Nueva marca:", productoEditar.getMarca());
+    productoEditar.setMarca(marca);
     
-    String categoria = InputValidator.leerString(scanner, "Categoría [" + productoEditar.getCategoria() + "]:");
-    if (!categoria.isEmpty()) productoEditar.setCategoria(categoria.toUpperCase());
+    String categoria = InputValidator.leerStringOpcional(scanner, "Nueva categoría:", productoEditar.getCategoria());
+    productoEditar.setCategoria(categoria.toUpperCase());
     
-    if (InputValidator.leerConfirmacion(scanner, "¿Desea modificar el precio?")) {
-      Double precio = InputValidator.leerDoubleSeguro(scanner, "Nuevo precio:");
-      productoEditar.setPrecio(precio);
-    }
+    Double precio = InputValidator.leerDoublePositivoOpcional(scanner, "Nuevo precio:", productoEditar.getPrecio());
+    productoEditar.setPrecio(precio);
     
-    if (InputValidator.leerConfirmacion(scanner, "¿Desea modificar el peso?")) {
-      Double peso = InputValidator.leerDoubleSeguro(scanner, "Nuevo peso:");
-      productoEditar.setPeso(peso);
-    }
+    Double peso = InputValidator.leerDoubleNoNegativoOpcional(scanner, "Nuevo peso:", productoEditar.getPeso());
+    productoEditar.setPeso(peso);
     
     if (InputValidator.leerConfirmacion(scanner, "¿Desea modificar el código de barras?")) {
       System.out.println("Código de barras actual: " + 
@@ -204,9 +223,11 @@ public class ProductoController {
 
   public void mostrarProductos() {
     System.out.println("--Lista de productos--");
-    ArrayList<Producto> productos = (ArrayList<Producto>) productoService.getAll();
-    if (productos.isEmpty()) System.out.println("❌ No hay productos registrados.");
-        
+    List<Producto> productos = (List<Producto>) productoService.getAll();
+    if (productos.isEmpty()) {
+      System.out.println("❌ No hay productos registrados.");
+      return;
+    }
     for (Producto p : productos) {
         System.out.println(p);
     }
@@ -221,7 +242,7 @@ public class ProductoController {
       return;
     }
 
-    ArrayList<Producto> productos = (ArrayList<Producto>) productoService.buscarPorCategoria(categoria);
+    List<Producto> productos = (List<Producto>) productoService.buscarPorCategoria(categoria);
     
     if (productos.isEmpty()) {
       System.out.println("❌ No hay productos registrados para la categoría: " + categoria);

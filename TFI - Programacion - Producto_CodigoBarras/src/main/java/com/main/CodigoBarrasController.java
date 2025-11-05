@@ -1,7 +1,7 @@
 package com.main;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 import com.entities.CodigoBarras;
@@ -55,7 +55,6 @@ public class CodigoBarrasController {
   public void crearCodigoBarras() {
     System.out.println("--Creación de nuevo código de barras--");
     System.out.println("Por favor, ingrese los datos del código de barras:");
-    String valor = InputValidator.leerString(scanner, "Valor:");
     String observaciones = InputValidator.leerString(scanner, "Observaciones:");
     
     mostrarTiposCodigoBarras();
@@ -65,6 +64,22 @@ public class CodigoBarrasController {
       return;
     }
     
+    String valor;
+    switch (tipoSeleccionado) {
+      case EAN13:
+        valor = InputValidator.leerCodigoBarras(scanner, "Valor (13 dígitos):", 13);
+        break;
+      case EAN8:
+        valor = InputValidator.leerCodigoBarras(scanner, "Valor (8 dígitos):", 8);
+        break;
+      case UPC:
+        valor = InputValidator.leerCodigoBarras(scanner, "Valor (12 dígitos):", 12);
+        break;
+      default:
+        valor = InputValidator.leerStringNoVacio(scanner, "Valor:");
+        break;
+    }
+
     CodigoBarras nuevoCodigoBarras = new CodigoBarras();
     nuevoCodigoBarras.setValor(valor);
     nuevoCodigoBarras.setObservaciones(observaciones);
@@ -91,19 +106,35 @@ public class CodigoBarrasController {
     String valor = InputValidator.leerString(scanner, "Valor [" + codigoEditar.getValor() + "]:");
     if (!valor.isEmpty()) codigoEditar.setValor(valor);
     
-    String observaciones = InputValidator.leerString(scanner, "Observaciones [" + codigoEditar.getObservaciones() + "]:");
-    if (!observaciones.isEmpty()) codigoEditar.setObservaciones(observaciones);
+    String observaciones = InputValidator.leerStringOpcional(scanner, "Nuevas observaciones:", codigoEditar.getObservaciones());
+    codigoEditar.setObservaciones(observaciones);
     
     if (InputValidator.leerConfirmacion(scanner, "¿Desea cambiar el tipo de código de barras?")) {
       mostrarTiposCodigoBarras();
       TipoCodigoBarras nuevoTipo = seleccionarTipoCodigoBarras();
       if (nuevoTipo != null) {
         codigoEditar.setTipo(nuevoTipo);
+        String nuevoValor;
+        switch (nuevoTipo) {
+          case EAN13:
+            nuevoValor = InputValidator.leerCodigoBarras(scanner, "Nuevo valor (13 dígitos):", 13);
+            break;
+          case EAN8:
+            nuevoValor = InputValidator.leerCodigoBarras(scanner, "Nuevo valor (8 dígitos):", 8);
+            break;
+          case UPC:
+            nuevoValor = InputValidator.leerCodigoBarras(scanner, "Nuevo valor (12 dígitos):", 12);
+            break;
+          default:
+            nuevoValor = InputValidator.leerStringNoVacio(scanner, "Nuevo valor:");
+            break;
+        }
+        codigoEditar.setValor(nuevoValor);
       } else {
         System.out.println("Tipo de código mantenido sin cambios.");
       }
     }
-    
+
     CodigoBarras editado = codigoBarrasService.actualizar(codigoEditar);
     if (editado != null) {
       System.out.println("✅ Código de barras actualizado correctamente: " + editado);
@@ -124,9 +155,12 @@ public class CodigoBarrasController {
 
   public void mostrarCodigosBarras() {
     System.out.println("--Lista de Códigos de Barras--");
-    ArrayList<CodigoBarras> codigos = (ArrayList<CodigoBarras>) codigoBarrasService.getAll();
-    if (codigos.isEmpty()) System.out.println("❌ No hay códigos registrados.");
-        
+    List<CodigoBarras> codigos = (List<CodigoBarras>) codigoBarrasService.getAll();
+    if (codigos.isEmpty()) {
+      System.out.println("❌ No hay códigos registrados.");
+      return;
+    }
+    
     for (CodigoBarras c : codigos) {
         System.out.println(c);
     }
@@ -140,8 +174,8 @@ public class CodigoBarrasController {
       System.out.println("❌ Opción inválida. Operación cancelada.");
       return;
     }
-    
-    ArrayList<CodigoBarras> codigos = (ArrayList<CodigoBarras>) codigoBarrasService.buscarPorTipo(tipoSeleccionado);
+
+    List<CodigoBarras> codigos = (List<CodigoBarras>) codigoBarrasService.buscarPorTipo(tipoSeleccionado);
     if (codigos.isEmpty()) {
       System.out.println("❌ No hay códigos registrados para el tipo seleccionado.");
       return;
