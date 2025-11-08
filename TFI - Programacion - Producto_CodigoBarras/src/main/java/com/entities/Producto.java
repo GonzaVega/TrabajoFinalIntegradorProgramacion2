@@ -1,6 +1,10 @@
 //Producto.java
 package com.entities;
 
+/**
+ * Entidad que representa un Producto (Clase A). Contiene los datos descriptivos
+ * del producto y la referencia unidireccional 1-a-1 a su CodigoBarras.
+ */
 public class Producto {
 
     private Long id;
@@ -9,40 +13,69 @@ public class Producto {
     private String marca;
     private String categoria;
     private double precio;
-    private Double peso; // Usamos el objeto Double para permitir valores nulos (opcional)
+    private Double peso; // Objeto Double para permitir valores nulos (opcional)
     private CodigoBarras codigoBarras; // Referencia 1 a 1 a la clase B
 
-    // Constructor vacío
+    /**
+     * Constructor vacío.
+     */
     public Producto() {
     }
 
-    // Constructor con datos principales;
+    /**
+     * Constructor con los datos principales (sin ID ni código de barras).
+     *
+     * @param nombre Nombre del producto.
+     * @param marca Marca del producto.
+     * @param categoria Categoría del producto.
+     * @param precio Precio del producto.
+     * @param peso Peso del producto (puede ser null).
+     */
     public Producto(String nombre, String marca, String categoria, double precio, Double peso) {
-        this.id = null; 
+        this.id = null;
         this.nombre = nombre;
         this.marca = marca;
         this.categoria = categoria;
         this.precio = precio;
         this.peso = peso;
-        this.codigoBarras = null; 
+        this.codigoBarras = null;
     }
 
-    // Constructor completo
+    /**
+     * Constructor completo (usado para poblar desde la BD).
+     *
+     * @param id El ID de la base de datos.
+     * @param nombre Nombre del producto.
+     * @param marca Marca del producto.
+     * @param categoria Categoría del producto.
+     * @param precio Precio del producto.
+     * @param peso Peso del producto (puede ser null).
+     * @param codigoBarras El objeto CodigoBarras asociado (puede ser null).
+     */
     public Producto(Long id, String nombre, String marca, String categoria, double precio, Double peso, CodigoBarras codigoBarras) {
         this(nombre, marca, categoria, precio, peso);
         this.id = id;
         this.codigoBarras = codigoBarras;
-        
+
     }
 
-    // Constructor con id.
+    /**
+     * Constructor para un nuevo producto con código de barras (sin ID).
+     *
+     * @param nombre Nombre del producto.
+     * @param marca Marca del producto.
+     * @param categoria Categoría del producto.
+     * @param precio Precio del producto.
+     * @param codigoBarras El objeto CodigoBarras asociado.
+     * @param peso Peso del producto (puede ser null).
+     */
     public Producto(String nombre, String marca, String categoria, double precio, CodigoBarras codigoBarras, Double peso) {
         this(nombre, marca, categoria, precio, peso);
         this.id = null;
         this.codigoBarras = codigoBarras;
     }
 
-    // Getters y Setters
+    // --- Getters y Setters ---
     public Long getId() {
         return id;
     }
@@ -109,16 +142,15 @@ public class Producto {
 
     @Override
     public String toString() {
-        // Se imprime el id del código de barras para evitar recursividad infinita si CodigoBarras imprimiera Producto
-        return "Producto{" +
-                "id=" + id +
-                ", eliminado=" + eliminado +
-                ", nombre='" + nombre + '\'' +
-                ", marca='" + marca + '\'' +
-                ", categoria='" + categoria + '\'' +
-                ", precio=" + precio +
-                ", peso=" + peso +
-                ", codigoBarrasId=" + (codigoBarras != null ? codigoBarras.getId() : "null") +
-                '}';
+        return "Producto{"
+                + "id=" + id
+                + ", eliminado=" + eliminado
+                + ", nombre='" + nombre + '\''
+                + ", marca='" + marca + '\''
+                + ", categoria='" + categoria + '\''
+                + ", precio=" + precio
+                + ", peso=" + peso
+                + ", codigoBarrasId=" + (codigoBarras != null ? codigoBarras.getId() : "null")
+                + '}';
     }
 }

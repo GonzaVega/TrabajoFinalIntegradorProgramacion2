@@ -3,34 +3,56 @@ package com.entities;
 
 import java.time.LocalDate;
 
+/**
+ * Entidad que representa un Código de Barras (Clase B). Contiene los datos
+ * específicos del código.
+ */
 public class CodigoBarras {
 
     private Long id;
-    private Boolean eliminado = false; // Valor por defecto para nuevos objetos
+    private Boolean eliminado = false;
     private TipoCodigoBarras tipo;
     private String valor;
     private LocalDate fechaAsignacion;
     private String observaciones;
 
-    // Constructor vacío
+    /**
+     * Constructor vacío.
+     */
     public CodigoBarras() {
     }
 
-    // Constructor completo
-    public CodigoBarras(Long id, TipoCodigoBarras tipo, String valor, LocalDate fechaAsignacion, String observaciones) {
-        this(tipo, valor, fechaAsignacion, observaciones);
-        this.id = id;
-    }
-
+    /**
+     * Constructor para crear un nuevo código de barras (sin ID).
+     *
+     * @param tipo Tipo de código (EAN13, EAN8, UPC).
+     * @param valor El valor numérico del código.
+     * @param fechaAsignacion La fecha de asignación.
+     * @param observaciones Notas adicionales.
+     */
     public CodigoBarras(TipoCodigoBarras tipo, String valor, LocalDate fechaAsignacion, String observaciones) {
-        this.id = null; 
+        this.id = null;
         this.tipo = tipo;
         this.valor = valor;
         this.fechaAsignacion = fechaAsignacion;
         this.observaciones = observaciones;
     }
 
-    // Getters y Setters
+    /**
+     * Constructor completo (usado para poblar desde la BD).
+     *
+     * @param id El ID de la base de datos.
+     * @param tipo Tipo de código (EAN13, EAN8, UPC).
+     * @param valor El valor numérico del código.
+     * @param fechaAsignacion La fecha de asignación.
+     * @param observaciones Notas adicionales.
+     */
+    public CodigoBarras(Long id, TipoCodigoBarras tipo, String valor, LocalDate fechaAsignacion, String observaciones) {
+        this(tipo, valor, fechaAsignacion, observaciones);
+        this.id = id;
+    }
+
+    // --- Getters y Setters ---
     public Long getId() {
         return id;
     }
@@ -81,13 +103,13 @@ public class CodigoBarras {
 
     @Override
     public String toString() {
-        return "CodigoBarras{" +
-                "id=" + id +
-                ", eliminado=" + eliminado +
-                ", tipo=" + tipo +
-                ", valor='" + valor + '\'' +
-                ", fechaAsignacion=" + fechaAsignacion +
-                ", observaciones='" + observaciones + '\'' +
-                '}';
+        return "CodigoBarras{"
+                + "id=" + id
+                + ", eliminado=" + eliminado
+                + ", tipo=" + tipo
+                + ", valor='" + valor + '\''
+                + ", fechaAsignacion=" + fechaAsignacion
+                + ", observaciones='" + observaciones + '\''
+                + '}';
     }
 }

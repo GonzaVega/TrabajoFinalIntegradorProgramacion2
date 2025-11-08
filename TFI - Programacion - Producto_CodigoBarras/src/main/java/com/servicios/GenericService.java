@@ -1,4 +1,4 @@
-//GenericService.java
+// GenericService.java
 package com.servicios;
 
 import java.util.List;

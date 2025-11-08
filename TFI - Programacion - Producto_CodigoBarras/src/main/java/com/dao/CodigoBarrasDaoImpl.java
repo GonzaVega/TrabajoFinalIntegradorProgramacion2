@@ -8,12 +8,15 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Implementación del GenericDao para la entidad CodigoBarras. Contiene todas
+ * las consultas SQL JDBC para interactuar con la tabla codigos_barras.
+ */
 public class CodigoBarrasDaoImpl implements GenericDao<CodigoBarras> {
 
     @Override
     public CodigoBarras crear(CodigoBarras codigoBarras, Connection connection) throws SQLException {
         String sql = "INSERT INTO codigos_barras (tipo, valor, fecha_asignacion, observaciones, eliminado) VALUES (?, ?, ?, ?, ?)";
-        // Try-with-resources para asegurar que el PreparedStatement se cierre
         try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, codigoBarras.getTipo().name());
             ps.setString(2, codigoBarras.getValor());
@@ -23,7 +26,6 @@ public class CodigoBarrasDaoImpl implements GenericDao<CodigoBarras> {
 
             ps.executeUpdate();
 
-            // Obtener el ID generado por la base de datos
             try (ResultSet rs = ps.getGeneratedKeys()) {
                 if (rs.next()) {
                     codigoBarras.setId(rs.getLong(1));
@@ -100,8 +102,8 @@ public class CodigoBarrasDaoImpl implements GenericDao<CodigoBarras> {
      *
      * @param valor El valor exacto del código de barras a buscar.
      * @param connection La conexión a la BD.
-     * @return Una lista de códigos de barras (usualmente uno) que coinciden con
-     * el valor.
+     * @return Una lista de códigos de barras que coinciden con el valor.
+     * @throws SQLException Si ocurre un error de SQL.
      */
     public List<CodigoBarras> buscarPorValor(String valor, Connection connection) throws SQLException {
         List<CodigoBarras> codigos = new ArrayList<>();
@@ -125,17 +127,18 @@ public class CodigoBarrasDaoImpl implements GenericDao<CodigoBarras> {
     }
 
     /**
-     * Filtra códigos de barras activos por su tipo.
+     * Filtra códigos de barras activos por su tipo (Enum).
      *
      * @param tipo El tipo (EAN13, EAN8, UPC) a buscar.
      * @param connection La conexión a la BD.
      * @return Una lista de códigos de barras que pertenecen a ese tipo.
+     * @throws SQLException Si ocurre un error de SQL.
      */
     public List<CodigoBarras> buscarPorTipo(TipoCodigoBarras tipo, Connection connection) throws SQLException {
         List<CodigoBarras> codigos = new ArrayList<>();
         String sql = "SELECT * FROM codigos_barras WHERE tipo = ? AND eliminado = false";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setString(1, tipo.name()); // Convertimos el Enum a String
+            ps.setString(1, tipo.name());
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     CodigoBarras codigoBarras = new CodigoBarras();

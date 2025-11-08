@@ -5,10 +5,18 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
+/**
+ * Interfaz genérica para el patrón Data Access Object (DAO). Define las
+ * operaciones CRUD estándar que deben implementar todos los DAOs. Acepta una
+ * Conexión para ser gestionada por la capa de Servicio.
+ *
+ * @param <T> El tipo de la entidad (ej: Producto, CodigoBarras).
+ */
 public interface GenericDao<T> {
 
     /**
      * Inserta una nueva entidad en la base de datos.
+     *
      * @param entity La entidad a crear.
      * @param connection La conexión a la BD para la transacción.
      * @return La entidad creada, usualmente con el ID asignado por la BD.
@@ -17,16 +25,18 @@ public interface GenericDao<T> {
     T crear(T entity, Connection connection) throws SQLException;
 
     /**
-     * Busca una entidad por su ID.
+     * Busca una entidad por su ID (que no esté eliminada lógicamente).
+     *
      * @param id El ID de la entidad a buscar.
      * @param connection La conexión a la BD.
-     * @return La entidad encontrada, o null si no existe.
+     * @return La entidad encontrada, o null si no existe o está eliminada.
      * @throws SQLException Si ocurre un error de SQL.
      */
     T leer(long id, Connection connection) throws SQLException;
 
     /**
      * Devuelve una lista de todas las entidades (no eliminadas lógicamente).
+     *
      * @param connection La conexión a la BD.
      * @return Una lista de entidades.
      * @throws SQLException Si ocurre un error de SQL.
@@ -35,6 +45,7 @@ public interface GenericDao<T> {
 
     /**
      * Actualiza una entidad existente en la base de datos.
+     *
      * @param entity La entidad con los datos actualizados.
      * @param connection La conexión a la BD para la transacción.
      * @throws SQLException Si ocurre un error de SQL.
@@ -42,7 +53,8 @@ public interface GenericDao<T> {
     void actualizar(T entity, Connection connection) throws SQLException;
 
     /**
-     * Realiza una baja lógica de una entidad por su ID.
+     * Realiza una baja lógica de una entidad por su ID (SET eliminado = true).
+     *
      * @param id El ID de la entidad a eliminar.
      * @param connection La conexión a la BD para la transacción.
      * @throws SQLException Si ocurre un error de SQL.

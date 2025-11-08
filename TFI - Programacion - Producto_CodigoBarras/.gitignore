@@ -1,0 +1,24 @@
+# Maven
+/target/
+
+# IDEs
+/.idea/
+/.vscode/
+*.iml
+.classpath
+.project
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs / temp
+*.log
+/out/
+tmp/
+
+# Config DB local (explícito)
+/src/main/resources/db.properties
+db.properties
+database.properties

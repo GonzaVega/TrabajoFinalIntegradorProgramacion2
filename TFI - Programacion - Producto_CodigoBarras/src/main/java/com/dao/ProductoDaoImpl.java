@@ -9,6 +9,11 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Implementación del GenericDao para la entidad Producto. Contiene todas las
+ * consultas SQL JDBC para interactuar con la tabla productos. Maneja la
+ * relación opcional 1-a-1 con codigos_barras.
+ */
 public class ProductoDaoImpl implements GenericDao<Producto> {
 
     @Override
@@ -19,17 +24,19 @@ public class ProductoDaoImpl implements GenericDao<Producto> {
             ps.setString(2, producto.getMarca());
             ps.setString(3, producto.getCategoria());
             ps.setDouble(4, producto.getPrecio());
+
             if (producto.getPeso() != null) {
                 ps.setDouble(5, producto.getPeso());
             } else {
                 ps.setNull(5, Types.DOUBLE);
             }
+
             ps.setBoolean(6, producto.isEliminado());
 
             if (producto.getCodigoBarras() != null && producto.getCodigoBarras().getId() != null) {
                 ps.setLong(7, producto.getCodigoBarras().getId());
             } else {
-                ps.setNull(7, Types.BIGINT); // Si no hay código, insertamos NULL
+                ps.setNull(7, Types.BIGINT); // Maneja la relación opcional
             }
 
             ps.executeUpdate();
@@ -61,9 +68,14 @@ public class ProductoDaoImpl implements GenericDao<Producto> {
                     producto.setCategoria(rs.getString("categoria"));
                     producto.setPrecio(rs.getDouble("precio"));
                     producto.setPeso(rs.getDouble("peso"));
+                    if (rs.wasNull()) {
+                        producto.setPeso(null);
+                    }
+                    producto.setEliminado(rs.getBoolean("eliminado"));
+
                     long codigoBarrasId = rs.getLong("cb_id");
-                    
-                    if (!rs.wasNull()) { // Verificamos si el ID del código no era NULL
+
+                    if (!rs.wasNull()) { // Verifica si el LEFT JOIN trajo un código
                         CodigoBarras codigoBarras = new CodigoBarras();
                         codigoBarras.setId(codigoBarrasId);
                         codigoBarras.setTipo(TipoCodigoBarras.valueOf(rs.getString("tipo")));
@@ -94,8 +106,14 @@ public class ProductoDaoImpl implements GenericDao<Producto> {
                 producto.setCategoria(rs.getString("categoria"));
                 producto.setPrecio(rs.getDouble("precio"));
                 producto.setPeso(rs.getDouble("peso"));
+                if (rs.wasNull()) {
+                    producto.setPeso(null);
+                }
+                producto.setEliminado(rs.getBoolean("eliminado"));
+
                 long codigoBarrasId = rs.getLong("cb_id");
-                if (!rs.wasNull()) {
+
+                if (!rs.wasNull()) { // Verifica si el LEFT JOIN trajo un código
                     CodigoBarras codigoBarras = new CodigoBarras();
                     codigoBarras.setId(codigoBarrasId);
                     codigoBarras.setTipo(TipoCodigoBarras.valueOf(rs.getString("tipo")));
@@ -137,7 +155,6 @@ public class ProductoDaoImpl implements GenericDao<Producto> {
 
     @Override
     public void eliminar(long id, Connection connection) throws SQLException {
-        // La baja del código de barras asociado se debe manejar en la capa de servicio si es necesario
         String sql = "UPDATE productos SET eliminado = true WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setLong(1, id);
@@ -152,10 +169,10 @@ public class ProductoDaoImpl implements GenericDao<Producto> {
      * @param codigoBarrasId El ID del código de barras a buscar.
      * @param connection La conexión a la BD.
      * @return Una lista de productos que tienen asignado ese código.
+     * @throws SQLException Si ocurre un error de SQL.
      */
     public List<Producto> buscarPorCodigoBarras(Long codigoBarrasId, Connection connection) throws SQLException {
         List<Producto> productos = new ArrayList<>();
-        // No necesitamos JOIN aquí, ya que el servicio solo necesita saber SI existe un producto con ese código.
         String sql = "SELECT * FROM productos WHERE codigos_barras_id = ? AND eliminado = false";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setLong(1, codigoBarrasId);
@@ -186,10 +203,10 @@ public class ProductoDaoImpl implements GenericDao<Producto> {
      * @param categoria La categoría a buscar.
      * @param connection La conexión a la BD.
      * @return Una lista de productos que pertenecen a esa categoría.
+     * @throws SQLException Si ocurre un error de SQL.
      */
     public List<Producto> buscarPorCategoria(String categoria, Connection connection) throws SQLException {
         List<Producto> productos = new ArrayList<>();
-        // Usamos LEFT JOIN para manejar correctamente los productos sin código de barras
         String sql = "SELECT p.*, cb.id as cb_id, cb.tipo, cb.valor, cb.fecha_asignacion, cb.observaciones "
                 + "FROM productos p "
                 + "LEFT JOIN codigos_barras cb ON p.codigos_barras_id = cb.id "
