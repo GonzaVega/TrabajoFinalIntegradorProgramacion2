@@ -53,17 +53,19 @@ public class CodigoBarrasController {
   }
 
   public void crearCodigoBarras() {
+    System.out.println("1");
+
     System.out.println("--Creación de nuevo código de barras--");
     System.out.println("Por favor, ingrese los datos del código de barras:");
     String observaciones = InputValidator.leerString(scanner, "Observaciones:");
-    
+    System.out.println("2");
     mostrarTiposCodigoBarras();
     TipoCodigoBarras tipoSeleccionado = seleccionarTipoCodigoBarras();
     if (tipoSeleccionado == null) {
       System.out.println("❌ Opción inválida. Operación cancelada.");
       return;
     }
-    
+    System.out.println("3");
     String valor;
     switch (tipoSeleccionado) {
       case EAN13:
@@ -79,15 +81,19 @@ public class CodigoBarrasController {
         valor = InputValidator.leerStringNoVacio(scanner, "Valor:");
         break;
     }
-
+    
+    System.out.println("4");
     CodigoBarras nuevoCodigoBarras = new CodigoBarras();
     nuevoCodigoBarras.setValor(valor);
     nuevoCodigoBarras.setObservaciones(observaciones);
     nuevoCodigoBarras.setFechaAsignacion(LocalDate.now());
     nuevoCodigoBarras.setTipo(tipoSeleccionado);
+    System.out.println("5");
     
     CodigoBarras creado = codigoBarrasService.insertar(nuevoCodigoBarras);
+    System.out.println("6");
     if (creado != null) {
+      System.out.println("7");
       System.out.println("✅ Se creó correctamente su código de barras: " + creado);
       return;
     }
