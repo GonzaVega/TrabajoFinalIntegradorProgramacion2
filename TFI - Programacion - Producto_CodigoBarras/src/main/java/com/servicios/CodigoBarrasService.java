@@ -36,11 +36,6 @@ public class CodigoBarrasService implements GenericService<CodigoBarras> {
 			return false;
 		}
 
-		if (esValorDuplicado(codigoBarras.getValor(), codigoBarras.getId())) {
-			ManejadorExcepciones.manejarErrorValidacion("Valor del código de barras", "Ya existe un código con este valor");
-			return false;
-		}
-
 		return true;
 	}
 

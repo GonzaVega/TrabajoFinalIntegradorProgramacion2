@@ -87,12 +87,10 @@ public class CodigoBarrasController {
     nuevoCodigoBarras.setObservaciones(observaciones);
     nuevoCodigoBarras.setFechaAsignacion(LocalDate.now());
     nuevoCodigoBarras.setTipo(tipoSeleccionado);
-    System.out.println("5");
     
     CodigoBarras creado = codigoBarrasService.insertar(nuevoCodigoBarras);
 
     if (creado != null) {
-      System.out.println("7");
       System.out.println(" Se creó correctamente su código de barras: " + creado);
       return;
     }
