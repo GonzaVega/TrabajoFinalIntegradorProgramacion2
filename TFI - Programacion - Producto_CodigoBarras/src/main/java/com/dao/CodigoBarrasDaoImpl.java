@@ -16,17 +16,22 @@ public class CodigoBarrasDaoImpl implements GenericDao<CodigoBarras> {
         String sql = "INSERT INTO codigos_barras (tipo, valor, fecha_asignacion, observaciones, eliminado) VALUES (?, ?, ?, ?, ?)";
 
         try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            System.out.println("DAO: 17 - Seteando parámetros..."); // TIPO: DAO 17
             ps.setString(1, codigoBarras.getTipo().name());
             ps.setString(2, codigoBarras.getValor());
             ps.setDate(3, Date.valueOf(codigoBarras.getFechaAsignacion()));
             ps.setString(4, codigoBarras.getObservaciones());
             ps.setBoolean(5, codigoBarras.isEliminado());
 
+            System.out.println("DAO: 18 - Ejecutando UPDATE..."); // TIPO: DAO 18
             ps.executeUpdate();
+            System.out.println("DAO: 19 - UPDATE ejecutado, sin errores SQL."); // TIPO: DAO 19
 
             try (ResultSet rs = ps.getGeneratedKeys()) {
+                System.out.println("DAO: 20 - Obteniendo ID generado..."); // TIPO: DAO 20
                 if (rs.next()) {
                     codigoBarras.setId(rs.getLong(1));
+                    System.out.println("DAO: 21 - ID asignado."); // TIPO: DAO 21
                 }
             }
         }
