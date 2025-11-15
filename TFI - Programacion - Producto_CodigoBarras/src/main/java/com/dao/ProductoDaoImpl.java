@@ -1,4 +1,3 @@
-// ProductoDaoImpl.java
 package com.dao;
 
 import com.entities.CodigoBarras;
@@ -137,7 +136,6 @@ public class ProductoDaoImpl implements GenericDao<Producto> {
 
     @Override
     public void eliminar(long id, Connection connection) throws SQLException {
-        // La baja del código de barras asociado se debe manejar en la capa de servicio si es necesario
         String sql = "UPDATE productos SET eliminado = true WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setLong(1, id);
@@ -146,16 +144,15 @@ public class ProductoDaoImpl implements GenericDao<Producto> {
     }
 
     /**
-     * Encuentra todos los productos activos asociados a un ID de código de
-     * barras específico.
      *
-     * @param codigoBarrasId El ID del código de barras a buscar.
-     * @param connection La conexión a la BD.
-     * @return Una lista de productos que tienen asignado ese código.
+     * @param codigoBarrasId 
+     * @param connection 
+     * @return 
+     * 
      */
+
     public List<Producto> buscarPorCodigoBarras(Long codigoBarrasId, Connection connection) throws SQLException {
         List<Producto> productos = new ArrayList<>();
-        // No necesitamos JOIN aquí, ya que el servicio solo necesita saber SI existe un producto con ese código.
         String sql = "SELECT * FROM productos WHERE codigos_barras_id = ? AND eliminado = false";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setLong(1, codigoBarrasId);
@@ -180,16 +177,14 @@ public class ProductoDaoImpl implements GenericDao<Producto> {
     }
 
     /**
-     * Filtra productos activos por su categoría, ignorando mayúsculas y
-     * minúsculas.
      *
-     * @param categoria La categoría a buscar.
-     * @param connection La conexión a la BD.
-     * @return Una lista de productos que pertenecen a esa categoría.
+     * @param categoria 
+     * @param connection 
+     * @return 
+     * 
      */
     public List<Producto> buscarPorCategoria(String categoria, Connection connection) throws SQLException {
         List<Producto> productos = new ArrayList<>();
-        // Usamos LEFT JOIN para manejar correctamente los productos sin código de barras
         String sql = "SELECT p.*, cb.id as cb_id, cb.tipo, cb.valor, cb.fecha_asignacion, cb.observaciones "
                 + "FROM productos p "
                 + "LEFT JOIN codigos_barras cb ON p.codigos_barras_id = cb.id "

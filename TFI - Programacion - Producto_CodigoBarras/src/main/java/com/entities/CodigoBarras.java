@@ -1,4 +1,3 @@
-//CodigoBarras.java
 package com.entities;
 
 import java.time.LocalDate;
@@ -6,17 +5,15 @@ import java.time.LocalDate;
 public class CodigoBarras {
 
     private Long id;
-    private Boolean eliminado = false; // Valor por defecto para nuevos objetos
+    private Boolean eliminado = false; 
     private TipoCodigoBarras tipo;
     private String valor;
     private LocalDate fechaAsignacion;
     private String observaciones;
 
-    // Constructor vacío
     public CodigoBarras() {
     }
 
-    // Constructor completo
     public CodigoBarras(Long id, TipoCodigoBarras tipo, String valor, LocalDate fechaAsignacion, String observaciones) {
         this(tipo, valor, fechaAsignacion, observaciones);
         this.id = id;
@@ -30,7 +27,6 @@ public class CodigoBarras {
         this.observaciones = observaciones;
     }
 
-    // Getters y Setters
     public Long getId() {
         return id;
     }

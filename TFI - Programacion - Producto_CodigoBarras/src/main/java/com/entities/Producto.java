@@ -1,4 +1,3 @@
-//Producto.java
 package com.entities;
 
 public class Producto {
@@ -9,14 +8,12 @@ public class Producto {
     private String marca;
     private String categoria;
     private double precio;
-    private Double peso; // Usamos el objeto Double para permitir valores nulos (opcional)
-    private CodigoBarras codigoBarras; // Referencia 1 a 1 a la clase B
+    private Double peso; 
+    private CodigoBarras codigoBarras; 
 
-    // Constructor vacío
     public Producto() {
     }
 
-    // Constructor con datos principales;
     public Producto(String nombre, String marca, String categoria, double precio, Double peso) {
         this.id = null; 
         this.nombre = nombre;
@@ -27,7 +24,6 @@ public class Producto {
         this.codigoBarras = null; 
     }
 
-    // Constructor completo
     public Producto(Long id, String nombre, String marca, String categoria, double precio, Double peso, CodigoBarras codigoBarras) {
         this(nombre, marca, categoria, precio, peso);
         this.id = id;
@@ -35,14 +31,12 @@ public class Producto {
         
     }
 
-    // Constructor con id.
     public Producto(String nombre, String marca, String categoria, double precio, CodigoBarras codigoBarras, Double peso) {
         this(nombre, marca, categoria, precio, peso);
         this.id = null;
         this.codigoBarras = codigoBarras;
     }
 
-    // Getters y Setters
     public Long getId() {
         return id;
     }
@@ -109,7 +103,6 @@ public class Producto {
 
     @Override
     public String toString() {
-        // Se imprime el id del código de barras para evitar recursividad infinita si CodigoBarras imprimiera Producto
         return "Producto{" +
                 "id=" + id +
                 ", eliminado=" + eliminado +

@@ -82,35 +82,28 @@ public class CodigoBarrasService implements GenericService<CodigoBarras> {
 
 	@Override
 	public CodigoBarras insertar(CodigoBarras codigoBarras) {
-        System.out.println("TIPO: A1 - Inicio de insertar."); // TIPO: A1
 
 		if (!validarCamposObligatorios(codigoBarras)) {
 			return null;
 		}
 
 		if (!validarReglasNegocio(codigoBarras)) {
-            System.out.println("TIPO: A2 - Falló validación de reglas de negocio (Duplicado o Formato inválido)."); // TIPO: A2
 			return null;
 		}
-        System.out.println("TIPO: A3 - Validación de reglas de negocio exitosa."); // TIPO: A3
 
 		Connection conn = null;
 		try {
 			conn = DatabaseConnection.getConnection();
 			conn.setAutoCommit(false);
-            System.out.println("TIPO: A4 - Transacción iniciada."); // TIPO: A4
 
 			CodigoBarras resultado = codigoBarrasDao.crear(codigoBarras, conn);
 
 			conn.commit();
-            System.out.println("TIPO: A5 - COMMIT ejecutado."); // TIPO: A5
 			return resultado;
             
 		} catch (SQLException e) {
-            // Maneja errores de DB (duplicidad, foreign key, etc.)
 			try {
 				if (conn != null) conn.rollback();
-                System.out.println("TIPO: A6 - ROLLBACK tras SQLException."); // TIPO: A6
 			} catch (SQLException rollbackEx) {
 				ManejadorExcepciones.manejarErrorBaseDatos(rollbackEx, "Rollback al crear código de barras");
 			}
@@ -118,15 +111,11 @@ public class CodigoBarrasService implements GenericService<CodigoBarras> {
 			return null;
             
         } catch (RuntimeException e) { 
-            // FIX CRÍTICO: Captura excepciones de lógica (como NullPointerException en esValorDuplicado)
-            System.out.println("TIPO: A7 - Excepción de Runtime (NullPointer/Lógica) atrapada."); // TIPO: A7
             try {
                 if (conn != null) conn.rollback();
-                System.out.println("TIPO: A8 - ROLLBACK tras RuntimeException."); // TIPO: A8
             } catch (SQLException rollbackEx) {
                 ManejadorExcepciones.manejarErrorBaseDatos(rollbackEx, "Rollback tras error de lógica/runtime");
             }
-            // Esto asegura que la transacción siempre se cierre, incluso si la lógica falla.
             e.printStackTrace();
             return null;
             
@@ -135,7 +124,6 @@ public class CodigoBarrasService implements GenericService<CodigoBarras> {
 				if (conn != null) {
 					conn.setAutoCommit(true);
 					conn.close();
-                    System.out.println("TIPO: A9 - Conexión cerrada."); // TIPO: A9
 				}
 			} catch (SQLException closeEx) {
 				ManejadorExcepciones.manejarErrorBaseDatos(closeEx, "Cerrar conexión");
@@ -144,55 +132,6 @@ public class CodigoBarrasService implements GenericService<CodigoBarras> {
 	}
 
 
-
-
-
-	/* 
-	@Override
-	public CodigoBarras insertar(CodigoBarras codigoBarras) {
-		System.out.println("8");
-		if (!validarCamposObligatorios(codigoBarras)) {
-			return null;
-		}
-System.out.println("9");
-		if (!validarReglasNegocio(codigoBarras)) {
-			return null;
-		}
-
-		System.out.println("10");
-		Connection conn = null;
-		try {
-			System.out.println("11");
-			conn = DatabaseConnection.getConnection();
-			System.out.println("12");
-			conn.setAutoCommit(false);
-			System.out.println("13");
-
-			CodigoBarras resultado = codigoBarrasDao.crear(codigoBarras, conn);
-			System.out.println("140");
-			conn.commit();
-			System.out.println("150");
-			return resultado;
-		} catch (SQLException e) {
-			try {
-				if (conn != null) conn.rollback();
-			} catch (SQLException rollbackEx) {
-				ManejadorExcepciones.manejarErrorBaseDatos(rollbackEx, "Rollback al crear código de barras");
-			}
-			ManejadorExcepciones.manejarErrorBaseDatos(e, "Crear código de barras");
-			return null;
-		} finally {
-			try {
-				if (conn != null) {
-					conn.setAutoCommit(true);
-					conn.close();
-				}
-			} catch (SQLException closeEx) {
-				ManejadorExcepciones.manejarErrorBaseDatos(closeEx, "Cerrar conexión");
-			}
-		}
-	}
-		*/
   
 	@Override
 	public CodigoBarras actualizar(CodigoBarras codigoBarras) {
@@ -311,27 +250,20 @@ System.out.println("9");
 
 
 	private boolean esValorDuplicado(String valor, Long codigoBarrasId) {
-        System.out.println("TIPO: B1 - Iniciando esValorDuplicado. ID a validar: " + codigoBarrasId); // TIPO: B1
 		Connection conn = null;
 		try {
 			conn = DatabaseConnection.getConnection();
 
 			List<CodigoBarras> codigosConValor = codigoBarrasDao.buscarPorValor(valor, conn);
             
-            // LÓGICA CORREGIDA:
-            // 1. Si codigoBarrasId es null (es una inserción de un nuevo objeto)
             if (codigoBarrasId == null) {
-                System.out.println("TIPO: B2 - Modo Inserción. Encontrados con valor: " + codigosConValor.size()); // TIPO: B2
-                return !codigosConValor.isEmpty(); // Retorna TRUE si hay duplicados
+                return !codigosConValor.isEmpty(); 
             }
             
-            // 2. Si codigoBarrasId NO es null (es una actualización)
-            System.out.println("TIPO: B3 - Modo Actualización. IDs a comparar: " + codigoBarrasId); // TIPO: B3
 			return codigosConValor.stream()
 					.anyMatch(c -> !c.getId().equals(codigoBarrasId));
 
 		} catch (SQLException e) {
-            System.out.println("TIPO: B4 - SQLException en esValorDuplicado."); // TIPO: B4
 			ManejadorExcepciones.manejarErrorBaseDatos(e, "Validar unicidad de valor de código de barras");
 			return true; 
 		} finally {
@@ -343,29 +275,6 @@ System.out.println("9");
 		}
 	}
 
-
-
-	/* private boolean esValorDuplicado(String valor, Long codigoBarrasId) {
-		Connection conn = null;
-		try {
-			conn = DatabaseConnection.getConnection();
-
-			List<CodigoBarras> codigosConValor = codigoBarrasDao.buscarPorValor(valor, conn);
-
-			return codigosConValor.stream()
-					.anyMatch(c -> !c.getId().equals(codigoBarrasId));
-
-		} catch (SQLException e) {
-			ManejadorExcepciones.manejarErrorBaseDatos(e, "Validar unicidad de valor de código de barras");
-			return true;
-		} finally {
-			try {
-				if (conn != null) conn.close();
-			} catch (SQLException closeEx) {
-				ManejadorExcepciones.manejarErrorBaseDatos(closeEx, "Cerrar conexión");
-			}
-		}
-	} */
 
 	public List<CodigoBarras> buscarPorTipo(TipoCodigoBarras tipo) {
 		Connection conn = null;

@@ -1,4 +1,3 @@
-//DatabaseConnection.java
 package com.config;
 
 import java.io.InputStream;
@@ -11,7 +10,6 @@ public class DatabaseConnection {
 
     private static Properties properties = new Properties();
 
-    // Bloque estático para cargar propiedades una sola vez
     static {
         try (InputStream input = DatabaseConnection.class.getClassLoader().getResourceAsStream("db.properties")) {
             if (input == null) {
@@ -26,17 +24,15 @@ public class DatabaseConnection {
         }
     }
 
-    /**
-     * Constructor privado para evitar que se instancie esta clase de utilidad.
-     */
+
     private DatabaseConnection() {
     }
 
     /**
-     * Obtiene una nueva conexión a la base de datos.
-     * El que llama a este método es responsable de cerrar la conexión.
-     * @return un objeto Connection a la base de datos.
-     * @throws SQLException si ocurre un error de acceso a la base de datos.
+     * 
+     * @return 
+     * @throws SQLException 
+     * 
      */
     public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(
