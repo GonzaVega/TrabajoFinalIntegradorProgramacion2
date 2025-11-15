@@ -153,7 +153,7 @@ public class ProductoService implements GenericService<Producto> {
 			}
 
 			productoExistente.setEliminado(true);
-			productoDao.actualizar(productoExistente, conn);
+			productoDao.eliminar(id, conn);
 
 			conn.commit();
 			return productoExistente;
