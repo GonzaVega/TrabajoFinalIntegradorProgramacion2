@@ -76,7 +76,7 @@ public class AppMenu {
                     }
                   break;
                 default:
-                  System.out.println("❌ Opción inválida. Por favor seleccione una opción del 0 al 13.");
+                  System.out.println(" Opción inválida. Por favor seleccione una opción del 0 al 13.");
                   break;
               }
         }

@@ -24,7 +24,7 @@ public class App {
       } else if (modo == 1) {
         AppMenu.start();
       } else {
-        System.out.println("❌ Opción inválida");
+        System.out.println(" Opción inválida");
         sc.close();
       }
     } catch (Exception e) {

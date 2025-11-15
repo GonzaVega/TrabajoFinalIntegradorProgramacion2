@@ -35,26 +35,20 @@ public class AppMenuGUI extends JFrame {
         JPanel panel = new JPanel(new GridLayout(8, 2, 10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        panel.add(crearBoton("➕ Crear Producto", new Color(40, 167, 69), this::crearProducto));
-        panel.add(crearBoton("➕ Crear Código de Barras", new Color(40, 167, 69), this::crearCodigoBarras));
-
-        panel.add(crearBoton("📋 Listar Productos", new Color(0, 123, 255), this::listarProductos));
-        panel.add(crearBoton("📋 Listar Códigos", new Color(0, 123, 255), this::listarCodigosBarras));
-
-        panel.add(crearBoton("🔍 Buscar Producto por ID", new Color(23, 162, 184), this::buscarProducto));
-        panel.add(crearBoton("🔍 Buscar Código por ID", new Color(23, 162, 184), this::buscarCodigoBarras));
-
-        panel.add(crearBoton("📂 Buscar por Categoría", new Color(108, 117, 125), this::buscarPorCategoria));
-        panel.add(crearBoton("📂 Buscar por Tipo", new Color(108, 117, 125), this::buscarPorTipo));
-
-        panel.add(crearBoton("✏️ Editar Producto", new Color(255, 193, 7), this::editarProducto));
-        panel.add(crearBoton("✏️ Editar Código", new Color(255, 193, 7), this::editarCodigoBarras));
-
-        panel.add(crearBoton("🔗 Asignar Código a Producto", new Color(111, 66, 193), this::asignarCodigoAProducto));
-        panel.add(crearBoton("🗑️ Eliminar Producto", new Color(220, 53, 69), this::eliminarProducto));
-
-        panel.add(crearBoton("🗑️ Eliminar Código", new Color(220, 53, 69), this::eliminarCodigoBarras));
-        panel.add(crearBoton("❌ Salir", new Color(52, 58, 64), () -> System.exit(0)));
+        panel.add(crearBoton(" Crear Producto", new Color(40, 167, 69), this::crearProducto));
+        panel.add(crearBoton(" Crear Código de Barras", new Color(40, 167, 69), this::crearCodigoBarras));
+        panel.add(crearBoton(" Listar Productos", new Color(0, 123, 255), this::listarProductos));
+        panel.add(crearBoton(" Listar Códigos", new Color(0, 123, 255), this::listarCodigosBarras));
+        panel.add(crearBoton(" Buscar Producto por ID", new Color(23, 162, 184), this::buscarProducto));
+        panel.add(crearBoton(" Buscar Código por ID", new Color(23, 162, 184), this::buscarCodigoBarras));
+        panel.add(crearBoton(" Buscar por Categoría", new Color(108, 117, 125), this::buscarPorCategoria));
+        panel.add(crearBoton(" Buscar por Tipo", new Color(108, 117, 125), this::buscarPorTipo));
+        panel.add(crearBoton(" Editar Producto", new Color(255, 193, 7), this::editarProducto));
+        panel.add(crearBoton(" Editar Código", new Color(255, 193, 7), this::editarCodigoBarras));
+        panel.add(crearBoton(" Asignar Código a Producto", new Color(111, 66, 193), this::asignarCodigoAProducto));
+        panel.add(crearBoton(" Eliminar Producto", new Color(220, 53, 69), this::eliminarProducto));
+        panel.add(crearBoton(" Eliminar Código", new Color(220, 53, 69), this::eliminarCodigoBarras));
+        panel.add(crearBoton(" Salir", new Color(52, 58, 64), () -> System.exit(0)));
 
         add(panel);
         setVisible(true);
@@ -103,13 +97,13 @@ public class AppMenuGUI extends JFrame {
                 String precioStr = txtPrecio.getText().trim();
 
                 if (nombre.isEmpty() || marca.isEmpty() || categoria.isEmpty() || precioStr.isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "❌ Nombre, Marca, Categoría y Precio son obligatorios", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, " Nombre, Marca, Categoría y Precio son obligatorios", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
                 double precio = Double.parseDouble(precioStr);
                 if (precio <= 0) {
-                    JOptionPane.showMessageDialog(this, "❌ El precio debe ser mayor a 0", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, " El precio debe ser mayor a 0", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
@@ -123,7 +117,7 @@ public class AppMenuGUI extends JFrame {
                 if (!pesoStr.isEmpty()) {
                     double peso = Double.parseDouble(pesoStr);
                     if (peso < 0) {
-                        JOptionPane.showMessageDialog(this, "❌ El peso no puede ser negativo", "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(this, " El peso no puede ser negativo", "Error", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
                     p.setPeso(peso);
@@ -138,14 +132,14 @@ public class AppMenuGUI extends JFrame {
 
                 Producto resultado = productoService.insertar(p);
                 if (resultado != null) {
-                    JOptionPane.showMessageDialog(this, "✅ Producto creado con ID: " + resultado.getId());
+                    JOptionPane.showMessageDialog(this, " Producto creado con ID: " + resultado.getId());
                 } else {
-                    JOptionPane.showMessageDialog(this, "❌ Error al crear producto", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, " Error al crear producto", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "❌ Precio/Peso inválido", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, " Precio/Peso inválido", "Error", JOptionPane.ERROR_MESSAGE);
             } catch (Exception e) {
-                JOptionPane.showMessageDialog(this, "❌ Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, " Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -223,7 +217,7 @@ public class AppMenuGUI extends JFrame {
                 
                 if (resultado == null) {
                     JOptionPane.showMessageDialog(this, 
-                        "❌ No se pudo crear el código de barras.\n\n" +
+                        " No se pudo crear el código de barras.\n\n" +
                         "Posibles causas:\n" +
                         "• El código ya existe en la base de datos\n" +
                         "• Error de conexión\n\n" +
@@ -237,7 +231,7 @@ public class AppMenuGUI extends JFrame {
                 
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this, 
-                    "❌ Error inesperado: " + e.getMessage(), 
+                    " Error inesperado: " + e.getMessage(), 
                     "Error", 
                     JOptionPane.ERROR_MESSAGE);
             }
@@ -249,25 +243,25 @@ public class AppMenuGUI extends JFrame {
         switch (tipo) {
             case EAN13:
                 if (!valor.matches("\\d{13}")) {
-                    JOptionPane.showMessageDialog(this, "❌ EAN-13 debe tener exactamente 13 dígitos", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, " EAN-13 debe tener exactamente 13 dígitos", "Error", JOptionPane.ERROR_MESSAGE);
                     return false;
                 }
                 break;
             case EAN8:
                 if (!valor.matches("\\d{8}")) {
-                    JOptionPane.showMessageDialog(this, "❌ EAN-8 debe tener exactamente 8 dígitos", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, " EAN-8 debe tener exactamente 8 dígitos", "Error", JOptionPane.ERROR_MESSAGE);
                     return false;
                 }
                 break;
             case UPC:
                 if (!valor.matches("\\d{12}")) {
-                    JOptionPane.showMessageDialog(this, "❌ UPC debe tener exactamente 12 dígitos", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, " UPC debe tener exactamente 12 dígitos", "Error", JOptionPane.ERROR_MESSAGE);
                     return false;
                 }
                 break;
             default:
                 if (valor.isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "❌ El valor no puede estar vacío", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, " El valor no puede estar vacío", "Error", JOptionPane.ERROR_MESSAGE);
                     return false;
                 }
                 break;
@@ -283,7 +277,7 @@ public class AppMenuGUI extends JFrame {
                 Producto p = productoService.getById(id);
 
                 if (p == null) {
-                    JOptionPane.showMessageDialog(this, "❌ Producto no encontrado", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, " Producto no encontrado", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
@@ -298,13 +292,13 @@ public class AppMenuGUI extends JFrame {
                     p.setCodigoBarras(codigo);
                     Producto resultado = productoService.actualizar(p);
                     if (resultado != null) {
-                        JOptionPane.showMessageDialog(this, "✅ Código de barras asignado correctamente");
+                        JOptionPane.showMessageDialog(this, " Código de barras asignado correctamente");
                     } else {
-                        JOptionPane.showMessageDialog(this, "❌ Error al asignar código", "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(this, " Error al asignar código", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 }
             } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "❌ ID inválido", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, " ID inválido", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -354,10 +348,10 @@ public class AppMenuGUI extends JFrame {
                     );
                     JOptionPane.showMessageDialog(this, info, "Producto Encontrado", JOptionPane.INFORMATION_MESSAGE);
                 } else {
-                    JOptionPane.showMessageDialog(this, "❌ Producto no encontrado", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, " Producto no encontrado", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "❌ ID inválido", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, " ID inválido", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -401,13 +395,13 @@ public class AppMenuGUI extends JFrame {
                 if (confirm == JOptionPane.YES_OPTION) {
                     Producto resultado = productoService.eliminar(id);
                     if (resultado != null) {
-                        JOptionPane.showMessageDialog(this, "✅ Producto eliminado");
+                        JOptionPane.showMessageDialog(this, " Producto eliminado");
                     } else {
-                        JOptionPane.showMessageDialog(this, "❌ Error al eliminar", "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(this, " Error al eliminar", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 }
             } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "❌ ID inválido", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, " ID inválido", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -420,7 +414,7 @@ public class AppMenuGUI extends JFrame {
                 Producto p = productoService.getById(id);
 
                 if (p == null) {
-                    JOptionPane.showMessageDialog(this, "❌ Producto no encontrado", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, " Producto no encontrado", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
@@ -464,13 +458,13 @@ public class AppMenuGUI extends JFrame {
 
                     Producto resultado = productoService.actualizar(p);
                     if (resultado != null) {
-                        JOptionPane.showMessageDialog(this, "✅ Producto actualizado");
+                        JOptionPane.showMessageDialog(this, " Producto actualizado");
                     } else {
-                        JOptionPane.showMessageDialog(this, "❌ Error al actualizar", "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(this, " Error al actualizar", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 }
             } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "❌ Datos inválidos", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, " Datos inválidos", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -508,10 +502,10 @@ public class AppMenuGUI extends JFrame {
                 CodigoBarras resultado = codigoBarrasService.insertar(cb);
                 
                 if (resultado != null) {
-                    JOptionPane.showMessageDialog(this, "✅ Código creado con ID: " + resultado.getId());
+                    JOptionPane.showMessageDialog(this, " Código creado con ID: " + resultado.getId());
                 } else {
                     JOptionPane.showMessageDialog(this, 
-                        "❌ No se pudo crear el código de barras.\n\n" +
+                        " No se pudo crear el código de barras.\n\n" +
                         "Posibles causas:\n" +
                         "• El código '" + valor + "' ya existe en la base de datos\n" +
                         "• Error de conexión a la base de datos", 
@@ -519,7 +513,7 @@ public class AppMenuGUI extends JFrame {
                         JOptionPane.ERROR_MESSAGE);
                 }
             } catch (Exception e) {
-                JOptionPane.showMessageDialog(this, "❌ Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, " Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -566,10 +560,10 @@ public class AppMenuGUI extends JFrame {
                     );
                     JOptionPane.showMessageDialog(this, info, "Código Encontrado", JOptionPane.INFORMATION_MESSAGE);
                 } else {
-                    JOptionPane.showMessageDialog(this, "❌ Código no encontrado", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, " Código no encontrado", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "❌ ID inválido", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, " ID inválido", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -582,7 +576,7 @@ public class AppMenuGUI extends JFrame {
                 CodigoBarras cb = codigoBarrasService.getById(id);
 
                 if (cb == null) {
-                    JOptionPane.showMessageDialog(this, "❌ Código no encontrado", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, " Código no encontrado", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
@@ -616,10 +610,10 @@ public class AppMenuGUI extends JFrame {
                     CodigoBarras resultado = codigoBarrasService.actualizar(cb);
                     
                     if (resultado != null) {
-                        JOptionPane.showMessageDialog(this, "✅ Código actualizado");
+                        JOptionPane.showMessageDialog(this, " Código actualizado");
                     } else {
                         JOptionPane.showMessageDialog(this, 
-                            "❌ No se pudo actualizar el código de barras.\n\n" +
+                            " No se pudo actualizar el código de barras.\n\n" +
                             "Posibles causas:\n" +
                             "• El código '" + valor + "' ya existe para otro registro\n" +
                             "• Error de conexión a la base de datos", 
@@ -628,7 +622,7 @@ public class AppMenuGUI extends JFrame {
                     }
                 }
             } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "❌ Datos inválidos", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, " Datos inválidos", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -643,13 +637,13 @@ public class AppMenuGUI extends JFrame {
                 if (confirm == JOptionPane.YES_OPTION) {
                     CodigoBarras resultado = codigoBarrasService.eliminar(id);
                     if (resultado != null) {
-                        JOptionPane.showMessageDialog(this, "✅ Código eliminado");
+                        JOptionPane.showMessageDialog(this, " Código eliminado");
                     } else {
-                        JOptionPane.showMessageDialog(this, "❌ Error al eliminar", "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(this, " Error al eliminar", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 }
             } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "❌ ID inválido", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, " ID inválido", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }

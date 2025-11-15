@@ -37,7 +37,7 @@ public class InputValidator {
 
                 if (intentos < maxIntentos) {
                     ManejadorExcepciones.manejarEntradaInvalida(inputEx);
-                    System.out.println("⚠️  Intentos restantes: " + (maxIntentos - intentos));
+                    System.out.println("  Intentos restantes: " + (maxIntentos - intentos));
                 } else {
                     ManejadorExcepciones.manejarEntradaInvalida(inputEx);
                     throw new RuntimeException("Máximo de intentos alcanzado para entrada numérica");
@@ -46,7 +46,7 @@ public class InputValidator {
                 intentos++;
                 if (intentos < maxIntentos) {
                     ManejadorExcepciones.manejarEntradaInvalida(e);
-                    System.out.println("⚠️  Intentos restantes: " + (maxIntentos - intentos));
+                    System.out.println("  Intentos restantes: " + (maxIntentos - intentos));
                 } else {
                     ManejadorExcepciones.manejarEntradaInvalida(e);
                     throw new RuntimeException("Máximo de intentos alcanzado");
@@ -89,7 +89,7 @@ public class InputValidator {
 
                 if (intentos < maxIntentos) {
                     ManejadorExcepciones.manejarEntradaInvalida(inputEx);
-                    System.out.println("⚠️  Intentos restantes: " + (maxIntentos - intentos));
+                    System.out.println("  Intentos restantes: " + (maxIntentos - intentos));
                 } else {
                     ManejadorExcepciones.manejarEntradaInvalida(inputEx);
                     throw new RuntimeException("Máximo de intentos alcanzado para entrada decimal");
@@ -98,7 +98,7 @@ public class InputValidator {
                 intentos++;
                 if (intentos < maxIntentos) {
                     ManejadorExcepciones.manejarEntradaInvalida(e);
-                    System.out.println("⚠️  Intentos restantes: " + (maxIntentos - intentos));
+                    System.out.println("  Intentos restantes: " + (maxIntentos - intentos));
                 } else {
                     ManejadorExcepciones.manejarEntradaInvalida(e);
                     throw new RuntimeException("Máximo de intentos alcanzado");
@@ -141,7 +141,7 @@ public class InputValidator {
 
                 if (intentos < maxIntentos) {
                     ManejadorExcepciones.manejarEntradaInvalida(inputEx);
-                    System.out.println("⚠️  Intentos restantes: " + (maxIntentos - intentos));
+                    System.out.println("  Intentos restantes: " + (maxIntentos - intentos));
                 } else {
                     ManejadorExcepciones.manejarEntradaInvalida(inputEx);
                     throw new RuntimeException("Máximo de intentos alcanzado");
@@ -150,7 +150,7 @@ public class InputValidator {
                 intentos++;
                 if (intentos < maxIntentos) {
                     ManejadorExcepciones.manejarEntradaInvalida(e);
-                    System.out.println("⚠️  Intentos restantes: " + (maxIntentos - intentos));
+                    System.out.println("  Intentos restantes: " + (maxIntentos - intentos));
                 } else {
                     ManejadorExcepciones.manejarEntradaInvalida(e);
                     throw new RuntimeException("Máximo de intentos alcanzado");
@@ -192,7 +192,7 @@ public class InputValidator {
 
                 if (intentos < MAX_INTENTOS_DEFAULT) {
                     ManejadorExcepciones.manejarEntradaInvalida(e);
-                    System.out.println("⚠️  Intentos restantes: " + (MAX_INTENTOS_DEFAULT - intentos));
+                    System.out.println("  Intentos restantes: " + (MAX_INTENTOS_DEFAULT - intentos));
                 } else {
                     ManejadorExcepciones.manejarEntradaInvalida(e);
                     throw new RuntimeException("Máximo de intentos alcanzado para confirmación");
@@ -214,9 +214,9 @@ public class InputValidator {
             }
             
             intentos++;
-            System.out.println("❌ ERROR: El campo no puede estar vacío");
+            System.out.println(" ERROR: El campo no puede estar vacío");
             if (intentos < MAX_INTENTOS_DEFAULT) {
-                System.out.println("⚠️  Intentos restantes: " + (MAX_INTENTOS_DEFAULT - intentos));
+                System.out.println("  Intentos restantes: " + (MAX_INTENTOS_DEFAULT - intentos));
             }
         }
         throw new RuntimeException("Máximo de intentos alcanzado");
@@ -251,14 +251,14 @@ public class InputValidator {
                     return valor;
                 }
                 
-                System.out.println("❌ ERROR: El valor debe ser mayor a 0");
+                System.out.println(" ERROR: El valor debe ser mayor a 0");
             } catch (NumberFormatException e) {
-                System.out.println("❌ ERROR: Debe ingresar un número decimal válido");
+                System.out.println(" ERROR: Debe ingresar un número decimal válido");
             }
             
             intentos++;
             if (intentos < MAX_INTENTOS_DEFAULT) {
-                System.out.println("⚠️  Intentos restantes: " + (MAX_INTENTOS_DEFAULT - intentos));
+                System.out.println("  Intentos restantes: " + (MAX_INTENTOS_DEFAULT - intentos));
             }
         }
         throw new RuntimeException("Máximo de intentos alcanzado");
@@ -282,14 +282,14 @@ public class InputValidator {
                     return valor;
                 }
                 
-                System.out.println("❌ ERROR: El valor debe ser mayor a 0");
+                System.out.println(" ERROR: El valor debe ser mayor a 0");
             } catch (NumberFormatException e) {
-                System.out.println("❌ ERROR: Debe ingresar un número decimal válido");
+                System.out.println(" ERROR: Debe ingresar un número decimal válido");
             }
             
             intentos++;
             if (intentos < MAX_INTENTOS_DEFAULT) {
-                System.out.println("⚠️  Intentos restantes: " + (MAX_INTENTOS_DEFAULT - intentos));
+                System.out.println("  Intentos restantes: " + (MAX_INTENTOS_DEFAULT - intentos));
             }
         }
         throw new RuntimeException("Máximo de intentos alcanzado");
@@ -312,14 +312,14 @@ public class InputValidator {
                     return valor;
                 }
                 
-                System.out.println("❌ ERROR: El valor no puede ser negativo");
+                System.out.println(" ERROR: El valor no puede ser negativo");
             } catch (NumberFormatException e) {
-                System.out.println("❌ ERROR: Debe ingresar un número decimal válido");
+                System.out.println(" ERROR: Debe ingresar un número decimal válido");
             }
             
             intentos++;
             if (intentos < MAX_INTENTOS_DEFAULT) {
-                System.out.println("⚠️  Intentos restantes: " + (MAX_INTENTOS_DEFAULT - intentos));
+                System.out.println("  Intentos restantes: " + (MAX_INTENTOS_DEFAULT - intentos));
             }
         }
         throw new RuntimeException("Máximo de intentos alcanzado");
@@ -343,14 +343,14 @@ public class InputValidator {
                     return valor;
                 }
                 
-                System.out.println("❌ ERROR: El valor no puede ser negativo");
+                System.out.println(" ERROR: El valor no puede ser negativo");
             } catch (NumberFormatException e) {
-                System.out.println("❌ ERROR: Debe ingresar un número decimal válido");
+                System.out.println(" ERROR: Debe ingresar un número decimal válido");
             }
             
             intentos++;
             if (intentos < MAX_INTENTOS_DEFAULT) {
-                System.out.println("⚠️  Intentos restantes: " + (MAX_INTENTOS_DEFAULT - intentos));
+                System.out.println("  Intentos restantes: " + (MAX_INTENTOS_DEFAULT - intentos));
             }
         }
         throw new RuntimeException("Máximo de intentos alcanzado");
@@ -366,12 +366,12 @@ public class InputValidator {
                 return input;
             }
             
-            System.out.println("❌ ERROR: Debe tener exactamente " + longitudEsperada + " dígitos numéricos");
+            System.out.println(" ERROR: Debe tener exactamente " + longitudEsperada + " dígitos numéricos");
             System.out.println("   Valor ingresado: '" + input + "' (" + input.length() + " caracteres)");
             
             intentos++;
             if (intentos < MAX_INTENTOS_DEFAULT) {
-                System.out.println("⚠️  Intentos restantes: " + (MAX_INTENTOS_DEFAULT - intentos));
+                System.out.println("  Intentos restantes: " + (MAX_INTENTOS_DEFAULT - intentos));
             }
         }
         throw new RuntimeException("Máximo de intentos alcanzado");
