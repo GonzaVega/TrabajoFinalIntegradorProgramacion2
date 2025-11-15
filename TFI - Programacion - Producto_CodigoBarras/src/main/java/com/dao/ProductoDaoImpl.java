@@ -28,7 +28,7 @@ public class ProductoDaoImpl implements GenericDao<Producto> {
             if (producto.getCodigoBarras() != null && producto.getCodigoBarras().getId() != null) {
                 ps.setLong(7, producto.getCodigoBarras().getId());
             } else {
-                ps.setNull(7, Types.BIGINT); // Si no hay código, insertamos NULL
+                ps.setNull(7, Types.BIGINT);  
             }
 
             ps.executeUpdate();
@@ -62,7 +62,7 @@ public class ProductoDaoImpl implements GenericDao<Producto> {
                     producto.setPeso(rs.getDouble("peso"));
                     long codigoBarrasId = rs.getLong("cb_id");
                     
-                    if (!rs.wasNull()) { // Verificamos si el ID del código no era NULL
+                    if (!rs.wasNull()) { 
                         CodigoBarras codigoBarras = new CodigoBarras();
                         codigoBarras.setId(codigoBarrasId);
                         codigoBarras.setTipo(TipoCodigoBarras.valueOf(rs.getString("tipo")));

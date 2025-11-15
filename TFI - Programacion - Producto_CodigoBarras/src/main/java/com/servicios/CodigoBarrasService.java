@@ -95,7 +95,6 @@ public class CodigoBarrasService implements GenericService<CodigoBarras> {
 		try {
 			conn = DatabaseConnection.getConnection();
 			conn.setAutoCommit(false);
-            System.out.println("TIPO: A4 - Transacción iniciada."); // TIPO: A4
 
 			CodigoBarras resultado = codigoBarrasDao.crear(codigoBarras, conn);
 
