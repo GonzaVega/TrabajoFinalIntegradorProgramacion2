@@ -244,33 +244,6 @@ public class CodigoBarrasService implements GenericService<CodigoBarras> {
 	}
 
 
-	private boolean esValorDuplicado(String valor, Long codigoBarrasId) {
-		Connection conn = null;
-		try {
-			conn = DatabaseConnection.getConnection();
-
-			List<CodigoBarras> codigosConValor = codigoBarrasDao.buscarPorValor(valor, conn);
-            
-            if (codigoBarrasId == null) {
-                return !codigosConValor.isEmpty(); 
-            }
-
-			return codigosConValor.stream()
-					.anyMatch(c -> !c.getId().equals(codigoBarrasId));
-
-		} catch (SQLException e) {
-			ManejadorExcepciones.manejarErrorBaseDatos(e, "Validar unicidad de valor de código de barras");
-			return true; 
-		} finally {
-			try {
-				if (conn != null) conn.close();
-			} catch (SQLException closeEx) {
-				ManejadorExcepciones.manejarErrorBaseDatos(closeEx, "Cerrar conexión");
-			}
-		}
-	}
-
-
 	public List<CodigoBarras> buscarPorTipo(TipoCodigoBarras tipo) {
 		Connection conn = null;
 		try {
