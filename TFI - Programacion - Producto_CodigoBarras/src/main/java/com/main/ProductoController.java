@@ -26,7 +26,7 @@ public class ProductoController {
 
   private Producto buscaValidaProducto(long idProducto) {
     Producto producto = productoService.getById(idProducto);
-    if (producto == null) System.out.println("❌ No se encontró un producto con el ID proporcionado.");
+    if (producto == null) System.out.println(" No se encontró un producto con el ID proporcionado.");
     return producto;
   }
 
@@ -34,7 +34,7 @@ public class ProductoController {
     Long idCodigoBarras = InputValidator.leerLongSeguro(scanner, "Ingrese el ID del código de barras:");
     CodigoBarras codigo = codigoBarrasService.getById(idCodigoBarras);
     
-    if (codigo == null) System.out.println("❌ No se encontró el código de barras especificado");
+    if (codigo == null) System.out.println(" No se encontró el código de barras especificado");
     
     return codigo;
   }
@@ -49,7 +49,7 @@ public class ProductoController {
       TipoCodigoBarras tipoSeleccionado = codigoBarrasController.seleccionarTipoCodigoBarras();
       
       if (tipoSeleccionado == null) {
-        System.out.println("❌ Tipo inválido. Código no creado.");
+        System.out.println(" Tipo inválido. Código no creado.");
         return null;
       }
 
@@ -78,15 +78,15 @@ public class ProductoController {
       CodigoBarras creado = codigoBarrasService.insertar(nuevoCodigo);
       
       if (creado != null) {
-        System.out.println("✅ Código de barras creado: " + creado);
+        System.out.println(" Código de barras creado: " + creado);
         return creado;
       } else {
-        System.out.println("❌ Error al crear el código de barras. Verifique los datos ingresados.");
+        System.out.println(" Error al crear el código de barras. Verifique los datos ingresados.");
         return null;
       }
       
     } catch (Exception e) {
-      System.err.println("❌ Error inesperado al crear código de barras: " + e.getMessage());
+      System.err.println(" Error inesperado al crear código de barras: " + e.getMessage());
       return null;
     }
   }
@@ -137,7 +137,7 @@ public class ProductoController {
     
     Producto creado = productoService.insertar(nuevoProducto);
     if (creado != null) {
-      System.out.println("✅ Se creó correctamente su producto: " + creado);
+      System.out.println(" Se creó correctamente su producto: " + creado);
       return;
     }
   }
@@ -184,13 +184,13 @@ public class ProductoController {
           CodigoBarras nuevoCodigo = seleccionarCodigoBarrasCompleto();
           if (nuevoCodigo != null) {
             productoEditar.setCodigoBarras(nuevoCodigo);
-            System.out.println("✅ Código de barras asignado correctamente");
+            System.out.println(" Código de barras asignado correctamente");
           }
           break;
           
         case 2:
           productoEditar.setCodigoBarras(null);
-          System.out.println("✅ Código de barras removido del producto");
+          System.out.println(" Código de barras removido del producto");
           break;
           
         case 3:
@@ -205,7 +205,7 @@ public class ProductoController {
   
     Producto editado = productoService.actualizar(productoEditar);
     if (editado != null) {
-      System.out.println("✅ Producto actualizado correctamente: " + editado);
+      System.out.println(" Producto actualizado correctamente: " + editado);
       return;
     }
   }
@@ -216,7 +216,7 @@ public class ProductoController {
   
     Producto productoEncontrado = buscaValidaProducto(idProducto);
     if (productoEncontrado != null) {
-      System.out.println("✅ Producto encontrado: " + productoEncontrado);
+      System.out.println(" Producto encontrado: " + productoEncontrado);
       return;
     }
   }
@@ -225,7 +225,7 @@ public class ProductoController {
     System.out.println("--Lista de productos--");
     List<Producto> productos = (List<Producto>) productoService.getAll();
     if (productos.isEmpty()) {
-      System.out.println("❌ No hay productos registrados.");
+      System.out.println(" No hay productos registrados.");
       return;
     }
     for (Producto p : productos) {
@@ -238,14 +238,14 @@ public class ProductoController {
     String categoria = InputValidator.leerStringMayusculas(scanner, "Ingrese la categoría a filtrar:");
   
     if (categoria.isEmpty()) {
-      System.out.println("❌ Categoría inválida. Operación cancelada.");
+      System.out.println(" Categoría inválida. Operación cancelada.");
       return;
     }
 
     List<Producto> productos = (List<Producto>) productoService.buscarPorCategoria(categoria);
     
     if (productos.isEmpty()) {
-      System.out.println("❌ No hay productos registrados para la categoría: " + categoria);
+      System.out.println(" No hay productos registrados para la categoría: " + categoria);
       return;
     }
 
@@ -267,9 +267,9 @@ public class ProductoController {
     if (InputValidator.leerConfirmacion(scanner, "¿Está seguro de que desea eliminar este producto?")) {
       Producto eliminado = productoService.eliminar(idProducto);
       if (eliminado != null) {
-        System.out.println("✅ Producto eliminado correctamente: " + eliminado);
+        System.out.println(" Producto eliminado correctamente: " + eliminado);
       } else {
-        System.out.println("❌ Error al eliminar el producto.");
+        System.out.println(" Error al eliminar el producto.");
       }
     } else {
       System.out.println("Operación cancelada.");
@@ -287,14 +287,14 @@ public class ProductoController {
     
     CodigoBarras codigo = seleccionarCodigoBarrasCompleto();
     if (codigo == null) {
-      System.out.println("❌ Operación cancelada - no se seleccionó código de barras válido");
+      System.out.println(" Operación cancelada - no se seleccionó código de barras válido");
       return;
     }
     
     productoExistente.setCodigoBarras(codigo);
     Producto actualizado = productoService.actualizar(productoExistente);
     if (actualizado != null) {
-      System.out.println("✅ Código de barras asignado correctamente al producto: " + actualizado);
+      System.out.println(" Código de barras asignado correctamente al producto: " + actualizado);
       return;
     }
   }  

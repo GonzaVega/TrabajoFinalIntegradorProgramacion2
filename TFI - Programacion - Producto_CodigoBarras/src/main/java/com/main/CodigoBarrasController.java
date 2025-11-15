@@ -21,7 +21,7 @@ public class CodigoBarrasController {
   private CodigoBarras buscaValidaCodigoBarras(long idCodigoBarras) {
     CodigoBarras codigoBarras = codigoBarrasService.getById(idCodigoBarras);
     if (codigoBarras == null) {
-      System.out.println("❌ No se encontró un código de barras con el ID proporcionado.");
+      System.out.println(" No se encontró un código de barras con el ID proporcionado.");
     }
     return codigoBarras;
   }
@@ -61,7 +61,7 @@ public class CodigoBarrasController {
     mostrarTiposCodigoBarras();
     TipoCodigoBarras tipoSeleccionado = seleccionarTipoCodigoBarras();
     if (tipoSeleccionado == null) {
-      System.out.println("❌ Opción inválida. Operación cancelada.");
+      System.out.println(" Opción inválida. Operación cancelada.");
       return;
     }
 
@@ -93,7 +93,7 @@ public class CodigoBarrasController {
 
     if (creado != null) {
       System.out.println("7");
-      System.out.println("✅ Se creó correctamente su código de barras: " + creado);
+      System.out.println(" Se creó correctamente su código de barras: " + creado);
       return;
     }
   }
@@ -142,7 +142,7 @@ public class CodigoBarrasController {
 
     CodigoBarras editado = codigoBarrasService.actualizar(codigoEditar);
     if (editado != null) {
-      System.out.println("✅ Código de barras actualizado correctamente: " + editado);
+      System.out.println(" Código de barras actualizado correctamente: " + editado);
       return;
     }
   }
@@ -153,7 +153,7 @@ public class CodigoBarrasController {
   
     CodigoBarras codigoEncontrado = buscaValidaCodigoBarras(idCodigoBarras);
     if (codigoEncontrado != null) {
-      System.out.println("✅ Código de barras encontrado: " + codigoEncontrado);
+      System.out.println(" Código de barras encontrado: " + codigoEncontrado);
       return;
     }
   }
@@ -162,7 +162,7 @@ public class CodigoBarrasController {
     System.out.println("--Lista de Códigos de Barras--");
     List<CodigoBarras> codigos = (List<CodigoBarras>) codigoBarrasService.getAll();
     if (codigos.isEmpty()) {
-      System.out.println("❌ No hay códigos registrados.");
+      System.out.println(" No hay códigos registrados.");
       return;
     }
     
@@ -176,13 +176,13 @@ public class CodigoBarrasController {
     mostrarTiposCodigoBarras();
     TipoCodigoBarras tipoSeleccionado = seleccionarTipoCodigoBarras();
     if (tipoSeleccionado == null) {
-      System.out.println("❌ Opción inválida. Operación cancelada.");
+      System.out.println(" Opción inválida. Operación cancelada.");
       return;
     }
 
     List<CodigoBarras> codigos = (List<CodigoBarras>) codigoBarrasService.buscarPorTipo(tipoSeleccionado);
     if (codigos.isEmpty()) {
-      System.out.println("❌ No hay códigos registrados para el tipo seleccionado.");
+      System.out.println(" No hay códigos registrados para el tipo seleccionado.");
       return;
     }
     
@@ -203,9 +203,9 @@ public class CodigoBarrasController {
     if (InputValidator.leerConfirmacion(scanner, "¿Está seguro de que desea eliminar este código de barras?")) {
       CodigoBarras eliminado = codigoBarrasService.eliminar(idCodigoBarras);
       if (eliminado != null) {
-        System.out.println("✅ Código de barras eliminado correctamente: " + eliminado);
+        System.out.println(" Código de barras eliminado correctamente: " + eliminado);
       } else {
-        System.out.println("❌ Error al eliminar el código de barras.");
+        System.out.println(" Error al eliminar el código de barras.");
       }
     } else {
       System.out.println("Operación cancelada.");

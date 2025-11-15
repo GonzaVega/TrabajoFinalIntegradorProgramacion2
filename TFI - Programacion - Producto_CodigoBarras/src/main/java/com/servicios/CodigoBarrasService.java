@@ -182,7 +182,7 @@ public class CodigoBarrasService implements GenericService<CodigoBarras> {
 			CodigoBarras codigoExistente = codigoBarrasDao.leer(id, conn);
 			if (codigoExistente == null) {
 				conn.rollback();
-				System.out.println("❌ No existe código de barras con ID: " + id);
+				System.out.println(" No existe código de barras con ID: " + id);
 				return null;
 			}
 

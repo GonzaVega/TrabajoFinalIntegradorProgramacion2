@@ -148,12 +148,12 @@ public class ProductoService implements GenericService<Producto> {
 			Producto productoExistente = productoDao.leer(id, conn);
 			if (productoExistente == null) {
 				conn.rollback();
-				System.out.println("❌ No existe producto con ID: " + id);
+				System.out.println(" No existe producto con ID: " + id);
 				return null;
 			}
 
 			productoExistente.setEliminado(true);
-			productoDao.actualizar(productoExistente, conn);
+			productoDao.eliminar(id, conn);
 
 			conn.commit();
 			return productoExistente;
