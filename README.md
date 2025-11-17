@@ -56,6 +56,9 @@ db.password=
 
 # El driver JDBC para MySQL
 db.driver=com.mysql.cj.jdbc.Driver
+```
+
+---
 
 ## Paso 4: Ejecutar el archivo src/main/java/com/main/App.Java
 
