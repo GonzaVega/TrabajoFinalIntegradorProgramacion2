@@ -13,7 +13,7 @@
 - **Profesor Coordinador:** Carlos Martinez
 
 ## Video Demostrativo
-🔗 [Ver video explicativo en YouTube](https://youtu.be/fZCR4SekOLI)
+🔗 [Ver video explicativo en YouTube](https://www.youtube.com/watch?v=1gK8EBLzP08)
 
 ---
 
